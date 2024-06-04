@@ -1,0 +1,6 @@
+#ifndef RESOURCETYPE_HPP
+#define RESOURCETYPE_HPP
+
+enum ResourceType { NONE, WOOD, BRICK, WOOL, WHEAT, IRON, DESERT };
+
+#endif // RESOURCETYPE_HPP
