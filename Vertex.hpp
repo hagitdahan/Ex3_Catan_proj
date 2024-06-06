@@ -2,7 +2,7 @@
 #define VERTEX_HPP
 
 #include <vector>
-#include "ResourceType.hpp"
+#include "Card.hpp"
 #include "Piece.hpp"
 
 class Edge;

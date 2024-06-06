@@ -5,13 +5,13 @@
 #include <cstdlib>
 #include <stdexcept>
 
-
 Board::Board() {
     vertices.resize(54); // Ensure vertices vector can hold 54 elements
     initVertices();
     initEdges();
     initTiles();
     connectTiles();
+    initCards();
     this->turns=0;
 }
 Board::~Board() {
@@ -133,6 +133,26 @@ void Board::connectTiles() {
         addVertices(43,51,lands[18]);
     }
 }
+void Board::initCards() {
+    // Initialize resource cards, assuming an infinite supply of resource cards
+    resourceCardsMap[WOOD] = std::vector<ResourceCard>(1000, ResourceCard(WOOD));  // Initial large number to simulate infinite supply
+    resourceCardsMap[BRICK] = std::vector<ResourceCard>(1000, ResourceCard(BRICK));
+    resourceCardsMap[WOOL] = std::vector<ResourceCard>(1000, ResourceCard(WOOL));
+    resourceCardsMap[WHEAT] = std::vector<ResourceCard>(1000, ResourceCard(WHEAT));
+    resourceCardsMap[IRON] = std::vector<ResourceCard>(1000, ResourceCard(IRON));
+
+    // Initialize development cards
+    developmentCardsMap[KNIGHT] = std::vector<DevelopmentCard>(14, DevelopmentCard(KNIGHT));
+    developmentCardsMap[VICTORY_POINT] = std::vector<DevelopmentCard>(5, DevelopmentCard(VICTORY_POINT));
+    developmentCardsMap[MONOPOLY] = std::vector<DevelopmentCard>(2, DevelopmentCard(MONOPOLY));
+    developmentCardsMap[ROAD_BUILDING] = std::vector<DevelopmentCard>(2, DevelopmentCard(ROAD_BUILDING));
+    developmentCardsMap[YEAR_OF_PLENTY] = std::vector<DevelopmentCard>(2, DevelopmentCard(YEAR_OF_PLENTY));
+
+    // Shuffle development cards
+    for (auto& pair : developmentCardsMap) {
+        std::random_shuffle(pair.second.begin(), pair.second.end());
+    }
+}
 bool Board::placeSettlement(int playerId, int vertexId) {
     //Check if the vertex is unoccupied and has at least one adjacent road belonging to the player
     Vertex *vertex = vertices[vertexId];
@@ -147,7 +167,6 @@ bool Board::placeSettlement(int playerId, int vertexId) {
         vertex->setPiece(set); // Set the settlement on the vertex
         vertex->setOwner(playerId);
         std::cout << "Settlement placed successfully." << std::endl;
-        lands[0]->printCheckLand();
         return true;
     }
 
@@ -204,35 +223,57 @@ bool Board::placeRoad(int startVertexIndex, int endVertexIndex, int playerId) {
     std::cout << "No existing edge found between the vertices." << std::endl;
     return false;
 }
+bool Board::placeCity(int playerId, int vertexId) {
+    Vertex *vertex = vertices[vertexId];
+    if (vertex->getOwner() != playerId) {
+        std::cout << "You can't build a city here; this vertex is not yours." << std::endl;
+        return false;
+    }
+   
+    Piece* currentPiece = vertex->getPiece();
+    if (currentPiece == nullptr || currentPiece->getType() != "SETTLEMENT") {
+        std::cout << "You can only build a city on an existing settlement." << std::endl;
+        return false;
+    }
+    delete currentPiece;
+
+    City* city = new City(playerId);
+    vertex->setPiece(city);
+    
+    std::cout << "Settlement upgraded to city successfully." << std::endl;
+    return true;
+}
+void Board::setTurns(int turn){
+    this->turns=turn;
+}
 void Board::printCheck(){
   std::cout<< vertices[0]->getOwner() << std::endl;
 }
-void Board::distributeResourceToPlayer(int playerId, ResourceType resource, int amount) {
-    // Add logic to distribute resources to the player
-    // This could involve updating a player's resource inventory
-    // You will need to have a Player class or similar to keep track of resources
-    std::cout << "Player " << playerId << " receives " << amount << " of resource " << resource << std::endl;
+void Board::distributeResources(int roll,Player *player) {
+    for (size_t i = 0; i < lands.size(); ++i) {
+        Land* currentLand = lands[i];
+        if (currentLand->getLandNumber() == roll) {
+            std::vector<Vertex*> landVertices = currentLand->getVertices();
+            for (Vertex* vertex : landVertices) {
+                if (vertex->getOwner() == player->getId()) {
+                    std::vector<ResourceType> resourceVer=vertex->getConnectedResources();
+                    //add one resource
+                    if(vertex->getPiece()->getType()=="SETTLEMENT"){
+                        for(size_t j=0;j<resourceVer.size();j++){
+                            player->addResourceCard(resourceVer.at(j),1);
+                            std::cout << player->getName() << " reicive 1 resource"<<endl;
+                        }
+                    }
+                    //city
+                    else
+                    {
+                        for(size_t j=0;j<resourceVer.size();j++){
+                            player->addResourceCard(resourceVer.at(j),2);
+                        }
+                    }
+                    
+                }
+            }
+        }
+    }
 }
-void Board::distributeResources(int roll) {
-//     for (auto& land : lands) {
-//         if (land->getLandNumber() == roll) {
-//             const std::vector<Vertex>& vertices = land->getVertices();
-//             for (auto vertex : vertices) {
-//                 if (vertex.getOwner() != 0) {
-//                     int owner = vertex->getOwner();
-//                     if (vertex->getPiece() != nullptr) {
-//                         if (vertex->getPiece()->getType() == "SETTLEMENT") {
-//                             // Distribute resource to the owner
-//                             // Assuming you have a method to distribute resources
-//                             distributeResourceToPlayer(owner, land->getResourceType(), 1);
-//                         } else if (vertex->getPiece()->getType() == "CITY") {
-//                             // Distribute double resource to the owner
-//                             distributeResourceToPlayer(owner, land->getResourceType(), 2);
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//     }
- }
-

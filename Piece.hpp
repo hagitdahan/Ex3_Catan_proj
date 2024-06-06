@@ -9,7 +9,7 @@ public:
     Piece(int owner) : owner(owner) {}
 
     virtual ~Piece() = default;
-
+    virtual std::string getType() const = 0; // Pure virtual function for piece type
     int getOwner() const { return owner; }
     void setOwner(int newOwner) { owner = newOwner; }
 
@@ -22,6 +22,9 @@ public:
     void display() const override {
         std::cout << "Road owned by player " << owner << std::endl;
     }
+     std::string getType() const override{
+        return "ROAD";
+    }
 };
 class Settlement : public Piece {
 public:
@@ -30,7 +33,7 @@ public:
     void display() const override {
         std::cout << "Settlement owned by player " << owner << std::endl;
     }
-    std::string getType(){
+    std::string getType() const override{
         return "SETTLEMENT";
     }
 };
@@ -40,5 +43,8 @@ public:
 
     void display() const override {
         std::cout << "City owned by player " << owner << std::endl;
+    }
+    std::string getType() const override{
+        return "CITY";
     }
 };

@@ -1,16 +1,17 @@
 #include "Player.hpp"
 
+Player::Player(){};
 Player::Player(const std::string name,int id) {
     std::cout << "Player constructed: " << name << std::endl;
     this->name=name;
     this->victoryPoints=0;
     this->isMyTurn=false;
     this->id=id;
-    resources[WOOD] = 0;
-    resources[BRICK] = 0;
-    resources[WOOL] = 0;
-    resources[WHEAT] = 0;
-    resources[IRON] = 0;
+    resourceCards[WOOD] = 0;
+    resourceCards[BRICK] = 0;
+    resourceCards[WOOL] = 0;
+    resourceCards[WHEAT] = 0;
+    resourceCards[IRON] = 0;
 }
 void Player::setBoard(Board *board){
     this->board=board;
@@ -18,26 +19,54 @@ void Player::setBoard(Board *board){
 std::string Player::getName(){
         return this->name;
 }
-void Player::addResource(ResourceType resource, int amount) {
-    resources[resource] += amount;
+int Player::getId(){
+    return this->id;
 }
-void Player::removeResource(ResourceType resource, int amount){
-    resources[resource] -=amount;
+bool Player::getTurn(){
+    return isMyTurn;
 }
-void Player::setName(std::string name){
-    this->name=name;
+void Player::addResourceCard(ResourceType resource, int amount) {
+    resourceCards[resource] += amount;
+}
+void Player::removeResourceCard(ResourceType resource, int amount){
+    resourceCards[resource] -=amount;
+}
+int Player::getResourceCardCount(ResourceType type) const {
+    auto it = resourceCards.find(type);
+    if (it != resourceCards.end()) {
+        return it->second;
+    }
+    return 0;
+}
+void Player::addDevelopmentCard(DevelopmentCardType type) {
+    developmentCards[type]++;
+}
+void Player::removeDevelopmentCard(DevelopmentCardType type) {
+    if (developmentCards[type] > 0) {
+        developmentCards[type]--;
+    }
+}
+int Player::getDevelopmentCardCount(DevelopmentCardType type) const {
+    auto it = developmentCards.find(type);
+    if (it != developmentCards.end()) {
+        return it->second;
+    }
+    return 0;
 }
 bool Player::canBuildSettlement() const {
-    return resources.at(WOOD) >= 1 && resources.at(BRICK) >= 1 && resources.at(WOOL) >= 1 && resources.at(WHEAT) >= 1;
+    return resourceCards.at(WOOD) >= 1 && resourceCards.at(BRICK) >= 1 && resourceCards.at(WOOL) >= 1 && resourceCards.at(WHEAT) >= 1;
 }
 bool Player::canBuildRoad() const {
-    return resources.at(WOOD) >= 1 && resources.at(BRICK) >= 1;
+    return resourceCards.at(WOOD) >= 1 && resourceCards.at(BRICK) >= 1;
+}
+bool Player::canBuildCity() const {
+    return resourceCards.at(IRON) >= 3 && resourceCards.at(WHEAT) >= 2;
 }
 void Player::initializeResources() {
-    addResource(WOOD, 2 + 2); // 2 for roads, 2 for settlements
-    addResource(BRICK, 2 + 2); // 2 for roads, 2 for settlements
-    addResource(WOOL, 2); // 2 for settlements
-    addResource(WHEAT, 2); // 2 for settlements
+    addResourceCard(WOOD, 4); // 2 for roads, 2 for settlements
+    addResourceCard(BRICK, 4); // 2 for roads, 2 for settlements
+    addResourceCard(WOOL, 2); // 2 for settlements
+    addResourceCard(WHEAT, 2); // 2 for settlements
 }
 void Player::setTurn(bool flag){
     this->isMyTurn=flag;
@@ -46,30 +75,33 @@ void Player::setOtherPlayers(Player* player1, Player* player2) {
     otherPlayer1 = player1;
     otherPlayer2 = player2;
 }
-void Player::printReources(){
+void Player::printResources(){
     std::cout << "Resources for player " << name << ":" << std::endl;
-    std::cout << "WOOD: " << resources[WOOD] << std::endl;
-    std::cout << "BRICK: " << resources[BRICK] << std::endl;
-    std::cout << "WOOL: " << resources[WOOL] << std::endl;
-    std::cout << "WHEAT: " << resources[WHEAT] << std::endl;
-    std::cout << "IRON: " << resources[IRON] << std::endl;
+    std::cout << "WOOD: " << resourceCards[WOOD] << std::endl;
+    std::cout << "BRICK: " << resourceCards[BRICK] << std::endl;
+    std::cout << "WOOL: " << resourceCards[WOOL] << std::endl;
+    std::cout << "WHEAT: " << resourceCards[WHEAT] << std::endl;
+    std::cout << "IRON: " << resourceCards[IRON] << std::endl;
 }
 void Player::removeHalfResources() {
     int totalResources = 0;
-    for (const auto& resource : resources) {
-        totalResources += resource.second;
+    for (const auto& pair : resourceCards) {
+        totalResources += pair.second;
     }
 
     if (totalResources > 7) {
         int resourcesToDrop = totalResources / 2;
         std::cout << "Player " << name << " has more than 7 resources and must drop " << resourcesToDrop << " resources." << std::endl;
 
-        for (auto& resource : resources) {
-            int dropAmount = std::min(resourcesToDrop / 5, resource.second); // Assuming 5 different resource types
-            resource.second -= dropAmount;
+        for (auto& pair : resourceCards) {
+            int dropAmount = std::min(resourcesToDrop, pair.second);
+            pair.second -= dropAmount;
             resourcesToDrop -= dropAmount;
         }
     }
+}
+int Player::getVictoryPoints() const{
+    return this->victoryPoints;
 }
 void Player::notifyOthers(int roll){
     otherPlayer1->handleRoll(roll);
@@ -80,7 +112,7 @@ void Player::handleRoll(int roll){
         this->removeHalfResources();
     }
     else{
-        this->board->distributeResources(roll);
+        board->distributeResources(roll,this);
     }
 }
 void Player::rollDice() {
@@ -108,22 +140,40 @@ void Player::buildSettlement(int vertexIndex) {
          throw std::runtime_error("Vertex not exsist.");
     }
     else if (canBuildSettlement() && isMyTurn) {
-        resources[WOOD]--;
-        resources[BRICK]--;
-        resources[WOOL]--;
-        resources[WHEAT]--;
-        board->placeSettlement(this->id,vertexIndex);
-    } else {
-        std::cout << "Cannot build settlement. Not enough resources or vertex is occupied." << std::endl;
+        if(board->placeSettlement(this->id,vertexIndex)){
+            resourceCards[WOOD]--;
+            resourceCards[BRICK]--;
+            resourceCards[WOOL]--;
+            resourceCards[WHEAT]--;
+            this->victoryPoints+=1;
+        }
+    } 
+    else {
+        std::cout << "Cannot build settlement. Not enough resources or Not your turn." << std::endl;
     }
 }
 void Player::buildRoad(int startVertexIndex, int endVertexIndex) {
     if (canBuildRoad() && isMyTurn) {
-        resources[WOOD]--;
-        resources[BRICK]--;
-        board->placeRoad(startVertexIndex, endVertexIndex,this->id);
+        if(board->placeRoad(startVertexIndex, endVertexIndex,this->id)){
+            resourceCards[WOOD]--;
+            resourceCards[BRICK]--;
+        }
     } 
     else {
-        std::cout << "Cannot build road. Not enough resources or edge is occupied." << std::endl;
+        std::cout << "Cannot build road. Not enough resources or Not your turn." << std::endl;
+    }
+}
+void Player::buildCity(int vertexIndex) {
+    if(vertexIndex < 0 || vertexIndex > 53) {
+        throw std::runtime_error("Vertex not exist.");
+    }
+    else if (canBuildCity() && isMyTurn) {
+        if(board->placeCity(this->id, vertexIndex)){
+            resourceCards[IRON] -= 3;
+            resourceCards[WHEAT] -= 2;
+            this->victoryPoints+=1;
+        }
+    } else {
+        std::cout << "Cannot build city. Not enough resources or it is not your turn." << std::endl;
     }
 }

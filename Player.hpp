@@ -4,29 +4,36 @@
 #include <vector>
 #include <map>
 #include <iostream>
-#include "Card.hpp"
 #include "Board.hpp"
 using namespace std;
-
+class Board;
 class Player {
 public:
+    Player();
     Player(const std::string name,int id);
     void setBoard(Board *board);
     std::string getName();
-    void setName(std::string name);
+    int getId();
+    bool getTurn();
     bool canBuildSettlement() const;
     bool canBuildRoad() const;
     bool canBuildCity() const;
+    std::string ResourceTypeToString(ResourceType type);
     //checing if this is my turn and if i have resiurces.
     void buildSettlement(int vertexIndex);
     void buildRoad(int startVertexIndex, int endVertexIndex);
     void buildCity(int vertexIndex); 
     void setTurn(bool flagTurn);
     void setOtherPlayers(Player* player1, Player* player2);
-    void addResource(ResourceType resource, int amount);
-    void removeResource(ResourceType resource, int amount);
+    void addResourceCard(ResourceType resource, int amount);
+    void removeResourceCard(ResourceType resource, int amount);
+    int getResourceCardCount(ResourceType type) const;
+
+    void addDevelopmentCard(DevelopmentCardType type);
+    void removeDevelopmentCard(DevelopmentCardType type);
+    int getDevelopmentCardCount(DevelopmentCardType type) const;
     void initializeResources();
-    void printReources();
+    void printResources();
     void removeHalfResources();
     // void buyDevelopmentCard();
     // void useDevelopmentCard(DevelopmentCardType type);
@@ -41,17 +48,15 @@ private:
     bool isMyTurn;
     std::string name;
     int id;
-    std::map<ResourceType, int> resources;
+    std::map<ResourceType, int> resourceCards;
+    std::map<DevelopmentCardType, int> developmentCards;
     std::vector<Settlement> settlements;
     std::vector<City>cites;
     std::vector<Road> roads;
     int victoryPoints;
-    std::vector<DevelopmentCard> developmentCards;
     Board *board;
     Player *otherPlayer1;
     Player *otherPlayer2; 
-    void incrementVictoryPoints(int points);
-    void decrementVictoryPoints(int points);
 };
 
 #endif // PLAYER_H

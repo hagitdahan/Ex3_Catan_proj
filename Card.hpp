@@ -2,11 +2,9 @@
 #define CARD_HPP
 
 #include <string>
-#include "ResourceType.hpp"
 
-//enum ResourceType { WOOD, BRICK, WOOL, WHEAT, IRON, NONE };
 enum DevelopmentCardType { KNIGHT, VICTORY_POINT, MONOPOLY, ROAD_BUILDING, YEAR_OF_PLENTY };
-
+enum ResourceType { NONE, WOOD, BRICK, WOOL, WHEAT, IRON, DESERT };
 class Card {
 public:
     virtual ~Card() = default;
@@ -29,6 +27,5 @@ public:
 private:
     DevelopmentCardType devCardType;
 };
-
 
 #endif // CARD_H

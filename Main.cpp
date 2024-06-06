@@ -10,54 +10,69 @@ using namespace std;
 
 int main()
 {
-    Player p1("Amit",10);
-    Player p2("Yossi",20);
-    Player p3("Dana",30);
-    Catan catan(p1, p2, p3);
+    // Player player1("Alice", 1);
+    // Player player2("Bob", 2);
+    // Player player3("Charlie", 3);
+    // Catan game(player1,player2,player3);
 
-    Board board = catan.getBoard(); // get the board of the game.
-    
-    p1.setTurn(true);
-    //p1.printReources();
-    p1.buildSettlement(0);
-    p1.buildSettlement(3);
-    p1.buildRoad(0,1);
-    p1.buildRoad(5,6);
-    p1.setTurn(false);
+    // game.ChooseStartingPlayer();
+    // Player* startingPlayer = game.getCurrentPlayer();
+    // bool a= startingPlayer->getTurn();
+   
+    // Player p1("Amit",10);
+    // Player p2("Yossi",20);
+    // Player p3("Dana",30);
+    // Catan catan(p1, p2, p3);
 
-    p2.setTurn(true);
-    p2.printReources();
-    p2.buildSettlement(2);
-    p2.buildSettlement(6);
-    p2.buildRoad(2,10);
-    p2.buildRoad(19,20);
-    p2.setTurn(false);
+    // Board board = catan.getBoard(); // get the board of the game.
     
-    p3.setTurn(true);
-    try
-    {
-        p3.buildSettlement(0); // p3 tries to place a settlement in the same location as p2.
-    }
-    catch (const std::exception &e)
-    {
-        cout << e.what() << endl;
-    }
-     try
-    {
-        p3.buildRoad(19,20); // p3 tries to place a settlement in the same location as p2.
-    }
-    catch (const std::exception &e)
-    {
-        cout << e.what() << endl;
-    }
-    //p3.printReources();
-    p3.buildSettlement(50);
-    p3.buildSettlement(43);
-    p3.buildRoad(22,23);
-    p3.buildRoad(14,15);
-    p3.setTurn(false);
-    catan.ChooseStartingPlayer();  
-    //catan.getCurrentPlayer()->rollDice();
+    // p1.setTurn(true);
+    // p1.buildSettlement(0);
+    // p1.buildSettlement(3);
+    // p1.buildRoad(0,1);
+    // p1.buildRoad(5,6);
+    // p1.setTurn(false);
+
+    // p2.setTurn(true);
+    // p2.buildSettlement(2);
+    // p2.buildSettlement(6);
+    // p2.buildRoad(2,10);
+    // p2.buildRoad(19,20);
+    // p2.setTurn(false);
+    
+    // p3.setTurn(true);
+    // try
+    // {
+    //     p3.buildSettlement(0); // p3 tries to place a settlement in the same location as p2.
+    // }
+    // catch (const std::exception &e)
+    // {
+    //     cout << e.what() << endl;
+    // }
+    //  try
+    // {
+    //     p3.buildRoad(19,20); // p3 tries to place a settlement in the same location as p2.
+    // }
+    // catch (const std::exception &e)
+    // {
+    //     cout << e.what() << endl;
+    // }
+    // p3.buildSettlement(50);
+    // p3.buildSettlement(43);
+    // p3.buildRoad(22,23);
+    // p3.buildRoad(14,15);
+    // p3.setTurn(false);
+    
+    // catan.ChooseStartingPlayer();  
+    // catan.getCurrentPlayer()->rollDice();
+
+
+
+
+
+    //board.distributeResources(10,&p1);
+    //std::cout<< p1.getResourceCardCount(IRON) <<std::endl;
+    //  board.distributeResources()
     //  vector<string> places = {"Forest", "Hills"};
     //  vector<int> placesNum = {5, 6};
     //  p1.placeSettelemnt(places, placesNum, board);

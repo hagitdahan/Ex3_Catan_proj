@@ -27,7 +27,7 @@ public:
 
 private:
     Board *board;
-    std::vector<Player> players;
+    std::vector<Player*> players;
     Player* currentPlayer;
     int currentPlayerIndex;
 };
