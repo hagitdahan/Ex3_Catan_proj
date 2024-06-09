@@ -10,61 +10,77 @@ using namespace std;
 
 int main()
 {
-    // Player player1("Alice", 1);
-    // Player player2("Bob", 2);
-    // Player player3("Charlie", 3);
-    // Catan game(player1,player2,player3);
+    // ResourceManager resourceManager;
+    // Player player ("Player1", 1);
+    // player.setResManage( &resourceManager);
+    //DevelopmentCardManager& manager = DevelopmentCardManager::getInstance();
+    //manager.initializeDevCards();
 
-    // game.ChooseStartingPlayer();
-    // Player* startingPlayer = game.getCurrentPlayer();
-    // bool a= startingPlayer->getTurn();
-   
-    // Player p1("Amit",10);
-    // Player p2("Yossi",20);
-    // Player p3("Dana",30);
-    // Catan catan(p1, p2, p3);
+    // Add resources needed for buying a development card
+    // player.addResourceCard(IRON,1);
+    // player.addResourceCard(WOOL,1);
+    // player.addResourceCard(WHEAT,1);
 
-    // Board board = catan.getBoard(); // get the board of the game.
+    //DevelopmentCard* dev=manager.drawDevelopmentCard();
     
-    // p1.setTurn(true);
-    // p1.buildSettlement(0);
-    // p1.buildSettlement(3);
-    // p1.buildRoad(0,1);
-    // p1.buildRoad(5,6);
-    // p1.setTurn(false);
+    // Player buys a development card
+    //player.buyDevelopmentCard();
+    //REQUIRE(player.getDevelopmentCardCount() == 1);
 
-    // p2.setTurn(true);
-    // p2.buildSettlement(2);
-    // p2.buildSettlement(6);
-    // p2.buildRoad(2,10);
-    // p2.buildRoad(19,20);
-    // p2.setTurn(false);
+    //const std::map<DevelopmentCard*, int>& devCards = player.getDevelopmentCards();
+    //REQUIRE_FALSE(devCards.empty()); // Make sure the player has at least one development card
+    //DevelopmentCard* card = devCards.begin()->first;
+    //player.useDevelopmentCard(card);
+    //REQUIRE(player.getDevelopmentCardCount() == 0);
+    Player p1("Amit",10);
+    Player p2("Yossi",20);
+    Player p3("Dana",30);
+    Catan catan(p1, p2, p3);
+    Board board = catan.getBoard(); // get the board of the game.
     
-    // p3.setTurn(true);
-    // try
-    // {
-    //     p3.buildSettlement(0); // p3 tries to place a settlement in the same location as p2.
-    // }
-    // catch (const std::exception &e)
-    // {
-    //     cout << e.what() << endl;
-    // }
-    //  try
-    // {
-    //     p3.buildRoad(19,20); // p3 tries to place a settlement in the same location as p2.
-    // }
-    // catch (const std::exception &e)
-    // {
-    //     cout << e.what() << endl;
-    // }
-    // p3.buildSettlement(50);
-    // p3.buildSettlement(43);
-    // p3.buildRoad(22,23);
-    // p3.buildRoad(14,15);
-    // p3.setTurn(false);
+    p1.setTurn(true);
+    p1.buildSettlement(0);
+    p1.buildSettlement(3);
+    p1.buildRoad(0,1);
+    p1.buildRoad(5,6);
+    p1.setTurn(false);
+
+    p2.setTurn(true);
+    p2.buildSettlement(2);
+    p2.buildSettlement(6);
+    p2.buildRoad(2,10);
+    p2.buildRoad(19,20);
+    p2.addResourceCard(IRON,4);
+    p2.printResources();
+    p2.handleRoll(7);
+    p2.printResources();
+    p2.setTurn(false);
     
-    // catan.ChooseStartingPlayer();  
-    // catan.getCurrentPlayer()->rollDice();
+    p3.setTurn(true);
+    try
+    {
+        p3.buildSettlement(0); // p3 tries to place a settlement in the same location as p2.
+    }
+    catch (const std::exception &e)
+    {
+        cout << e.what() << endl;
+    }
+     try
+    {
+        p3.buildRoad(19,20); // p3 tries to place a settlement in the same location as p2.
+    }
+    catch (const std::exception &e)
+    {
+        cout << e.what() << endl;
+    }
+    p3.buildSettlement(50);
+    p3.buildSettlement(43);
+    p3.buildRoad(22,23);
+    p3.buildRoad(14,15);
+    p3.setTurn(false);
+    
+    catan.ChooseStartingPlayer();  
+    catan.getCurrentPlayer()->rollDice();
 
 
 

@@ -6,7 +6,6 @@
 #include <stdexcept>
 #include "Land.hpp"
 #include "Edge.hpp"
-#include "Card.hpp"
 #include "Player.hpp"
 
 class Player;
@@ -16,8 +15,6 @@ private:
     std::vector<Land*> lands;
     std::vector<Vertex*> vertices;
     std::vector<Edge*> edges;
-    std::map<ResourceType, std::vector<ResourceCard>> resourceCardsMap;
-    std::map<DevelopmentCardType, std::vector<DevelopmentCard>> developmentCardsMap;
     int turns;
     void initVertices(); // Method to initialize vertices
     void addEdge(int startIndex,int lastIndex,int jump);
@@ -25,9 +22,6 @@ private:
     void initTiles(); // Method to initialize tiles
     void addVertices(int startVertexIndex, int endVertexIndex, Land* land);
     void connectTiles(); // Method to connect neighboring tiles
-    void initCards();
-
-    
 public:
     Board();
     ~Board();
@@ -35,8 +29,12 @@ public:
     bool placeSettlement(int playerId, int vertexId);
     bool placeRoad(int startVertexIndex, int endVertexIndex,int playerId);
     bool placeCity(int playerId,int vertexId);
-    void distributeResources(int roll,Player* player);
     void setTurns(int turn);
+    std::vector<ResourceType> getVertexResources(int indexVertex) const;
+    std::vector<Land*> getLands();
+    std::vector<Edge*> getEdges();
+    std::vector<Vertex*> getVertices();
+
 };
 
 

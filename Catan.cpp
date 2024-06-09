@@ -20,6 +20,12 @@ Catan::Catan(Player &p1, Player &p2, Player &p3){
     p2.setBoard(this->board);
     p3.setBoard(this->board);
     
+    this->resoureManage=new ResourceManager();
+
+    p1.setResManage(resoureManage);
+    p2.setResManage(resoureManage);
+    p3.setResManage(resoureManage);
+
     startGame();
 }
 Catan::~Catan() {}

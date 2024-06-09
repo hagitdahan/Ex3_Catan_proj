@@ -66,6 +66,11 @@
             "cwd": "/home/hagit/Desktop/Ex3_Catan_proj",
             "binaryPath": "/home/hagit/Desktop/Ex3_Catan_proj/catan",
             "binaryArgs": []
+        },
+        {
+            "cwd": "/home/hagit/Desktop/Ex3_Catan_proj",
+            "binaryPath": "/home/hagit/Desktop/Ex3_Catan_proj/test",
+            "binaryArgs": []
         }
     ]
 }

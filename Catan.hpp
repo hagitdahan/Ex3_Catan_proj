@@ -30,6 +30,7 @@ private:
     std::vector<Player*> players;
     Player* currentPlayer;
     int currentPlayerIndex;
+    ResourceManager* resoureManage;
 };
 
 #endif // CATAN_HPP

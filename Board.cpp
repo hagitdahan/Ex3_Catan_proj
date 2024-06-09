@@ -11,7 +11,6 @@ Board::Board() {
     initEdges();
     initTiles();
     connectTiles();
-    initCards();
     this->turns=0;
 }
 Board::~Board() {
@@ -44,6 +43,7 @@ void Board::initVertices() {
         vertices[i]=new Vertex(i);
     }
 }
+
 void Board::addEdge(int startIndex, int endIndex, int jump) {
         for (int i = startIndex; i < endIndex;) {
             bool edgeExists = false;
@@ -62,6 +62,12 @@ void Board::addEdge(int startIndex, int endIndex, int jump) {
             if(jump==1) i=i+1;
             else i=i+2;
         }
+        if(jump!=1){
+            Edge* e = new Edge(*vertices[endIndex], *vertices[endIndex + jump]);
+            edges.push_back(e);
+            vertices[endIndex]->addEdge(*e);
+            vertices[endIndex + jump]->addEdge(*e);
+        }
 }
 void Board::initEdges() {
     addEdge(0,6,1);
@@ -75,7 +81,6 @@ void Board::initEdges() {
     addEdge(16,26,11);
     addEdge(28,36,10);
     addEdge(39,45,8);
-
 }
 void Board::initTiles() {
     // Initialize resource tiles with numbers manually
@@ -131,26 +136,6 @@ void Board::connectTiles() {
         addVertices(39,47,lands[16]);
         addVertices(41,49,lands[17]);
         addVertices(43,51,lands[18]);
-    }
-}
-void Board::initCards() {
-    // Initialize resource cards, assuming an infinite supply of resource cards
-    resourceCardsMap[WOOD] = std::vector<ResourceCard>(1000, ResourceCard(WOOD));  // Initial large number to simulate infinite supply
-    resourceCardsMap[BRICK] = std::vector<ResourceCard>(1000, ResourceCard(BRICK));
-    resourceCardsMap[WOOL] = std::vector<ResourceCard>(1000, ResourceCard(WOOL));
-    resourceCardsMap[WHEAT] = std::vector<ResourceCard>(1000, ResourceCard(WHEAT));
-    resourceCardsMap[IRON] = std::vector<ResourceCard>(1000, ResourceCard(IRON));
-
-    // Initialize development cards
-    developmentCardsMap[KNIGHT] = std::vector<DevelopmentCard>(14, DevelopmentCard(KNIGHT));
-    developmentCardsMap[VICTORY_POINT] = std::vector<DevelopmentCard>(5, DevelopmentCard(VICTORY_POINT));
-    developmentCardsMap[MONOPOLY] = std::vector<DevelopmentCard>(2, DevelopmentCard(MONOPOLY));
-    developmentCardsMap[ROAD_BUILDING] = std::vector<DevelopmentCard>(2, DevelopmentCard(ROAD_BUILDING));
-    developmentCardsMap[YEAR_OF_PLENTY] = std::vector<DevelopmentCard>(2, DevelopmentCard(YEAR_OF_PLENTY));
-
-    // Shuffle development cards
-    for (auto& pair : developmentCardsMap) {
-        std::random_shuffle(pair.second.begin(), pair.second.end());
     }
 }
 bool Board::placeSettlement(int playerId, int vertexId) {
@@ -249,31 +234,15 @@ void Board::setTurns(int turn){
 void Board::printCheck(){
   std::cout<< vertices[0]->getOwner() << std::endl;
 }
-void Board::distributeResources(int roll,Player *player) {
-    for (size_t i = 0; i < lands.size(); ++i) {
-        Land* currentLand = lands[i];
-        if (currentLand->getLandNumber() == roll) {
-            std::vector<Vertex*> landVertices = currentLand->getVertices();
-            for (Vertex* vertex : landVertices) {
-                if (vertex->getOwner() == player->getId()) {
-                    std::vector<ResourceType> resourceVer=vertex->getConnectedResources();
-                    //add one resource
-                    if(vertex->getPiece()->getType()=="SETTLEMENT"){
-                        for(size_t j=0;j<resourceVer.size();j++){
-                            player->addResourceCard(resourceVer.at(j),1);
-                            std::cout << player->getName() << " reicive 1 resource"<<endl;
-                        }
-                    }
-                    //city
-                    else
-                    {
-                        for(size_t j=0;j<resourceVer.size();j++){
-                            player->addResourceCard(resourceVer.at(j),2);
-                        }
-                    }
-                    
-                }
-            }
-        }
-    }
+std::vector<ResourceType> Board::getVertexResources(int vertexIndex) const {
+    return vertices[vertexIndex]->getConnectedResources();
+}
+std::vector<Land*> Board::getLands(){
+    return lands;
+}
+std::vector<Edge*> Board::getEdges(){
+    return edges;
+}
+std::vector<Vertex*> Board::getVertices(){
+    return vertices;
 }

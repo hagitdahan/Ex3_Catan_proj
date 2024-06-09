@@ -23,6 +23,7 @@ class DevelopmentCard : public Card {
 public:
     DevelopmentCard(DevelopmentCardType type);
     DevelopmentCardType getDevelopmentCardType() const;
+    DevelopmentCard getType();
 
 private:
     DevelopmentCardType devCardType;

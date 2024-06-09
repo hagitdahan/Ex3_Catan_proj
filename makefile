@@ -1,8 +1,8 @@
 CXX = g++
 CXXFLAGS = -std=c++11 -g -Wall
 
-SRCS = Board.cpp Card.cpp Catan.cpp Player.cpp Main.cpp
-HDRS = Board.hpp Card.hpp Catan.hpp Land.hpp Piece.hpp Player.hpp Vertex.hpp
+SRCS = Board.cpp Card.cpp Catan.cpp Player.cpp Main.cpp ResourceManager.cpp 
+HDRS = Board.hpp Card.hpp Catan.hpp Land.hpp Piece.hpp Player.hpp Vertex.hpp ResourceManager.hpp 
 
 TESTSOURCES = TestCounter.cpp Test.cpp
 TESTOBJS = $(TESTSOURCES:.cpp=.o)
