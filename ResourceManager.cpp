@@ -15,12 +15,11 @@ void ResourceManager::addResource(ResourceType type, int amount, Player* p) {
 }
 
 void ResourceManager::removeResource(ResourceType type, int amount, Player* p) {
-    p->resourceCards[type]-=amount;
-    //  if (resourceCards[type] >= amount) {
-    //     resourceCards[type] -= amount;
-    // } else {
-    //     throw std::runtime_error("Not enough resources to remove.");
-    // }
+     if (p->resourceCards[type] >= amount) {
+        p->resourceCards[type] -= amount;
+    } else {
+        throw std::runtime_error("Not enough resources to remove.");
+    }
 }
 
 int ResourceManager::getResourceCount(ResourceType type, Player* p){
@@ -85,6 +84,13 @@ void ResourceManager::removeResourcesOfPiece(std::string pieceType, Player *p){
     const auto& costs = buildingCosts.at(pieceType);
     for (const auto& cost : costs) {
         removeResource(cost.first, cost.second, p);
+    }
+}
+
+void ResourceManager::addResourcesOfPiece(std::string pieceType, Player *p){
+    const auto& costs = buildingCosts.at(pieceType);
+    for (const auto& cost : costs) {
+        addResource(cost.first, cost.second, p);
     }
 }
 

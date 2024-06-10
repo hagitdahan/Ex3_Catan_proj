@@ -11,7 +11,4 @@ DevelopmentCard::DevelopmentCard(DevelopmentCardType type) : devCardType(type) {
 DevelopmentCardType DevelopmentCard::getDevelopmentCardType() const {
     return devCardType;
 }
-DevelopmentCard DevelopmentCard::getType(){
-    return devCardType;
-}
 

@@ -1,6 +1,7 @@
 #include "doctest.h"
 #include "Player.hpp"
 #include "Catan.hpp"
+#include "Deck.hpp"
 using namespace std;
 
 TEST_CASE("Test class player"){
@@ -39,26 +40,27 @@ TEST_CASE("Test class player"){
     //Assuming building a settlement gives the player 1 victory point
     CHECK(player2.getVictoryPoints() == 1);
 }
+
 TEST_CASE("Test class Vertex"){
     Board *b=new Board();
     CHECK_EQ(b->getVertices().size(),54);
+
 }
+
 TEST_CASE("Test class Edge"){
     Board* b=new Board();
     CHECK_EQ(b->getEdges().size(),72);
 }
+
 TEST_CASE("Test class Land"){
-    
+    Board* b=new Board();
+    CHECK_EQ(b->getLands().size(),19);
 }
-TEST_CASE("Test class Catan"){
-    
-} 
-TEST_CASE("Test class Board"){
-    
-}
+
 TEST_CASE("Test class DevelopentCardManage"){
     
 }
+
 TEST_CASE("Test Roll dice"){
     Player p1("mit",10);
     Player p2("Yoss",20);
@@ -107,6 +109,7 @@ TEST_CASE("Test Roll dice"){
     CHECK(p1.getResourceCardCount(WOOL)==1);
 
 }
+
 TEST_CASE("Testing turn order in Catan game") {
 
     Player player1("Alice", 1);
@@ -132,6 +135,7 @@ TEST_CASE("Testing turn order in Catan game") {
         CHECK(nextPlayer != currentPlayer); // לוודא שהשחקן הנוכחי שונה מהשחקן הבא
     }
 }
+
 TEST_CASE("number of victory point"){
     Player p1("Amit",10);
     Player p2("Yossi",20);
@@ -159,14 +163,14 @@ TEST_CASE("number of victory point"){
     p3.buildRoad(22,23);
     p3.buildRoad(14,15);
     
-
-    // p3.addResourceCard(IRON,3);
-    // p3.addResourceCard(WHEAT,2);
-    // p3.buildCity(50);
-    // CHECK(p3.getVictoryPoints()==3);
-    // p3.setTurn(false);
+    p3.addResourceCard(IRON,3);
+    p3.addResourceCard(WHEAT,2);
+    p3.buildCity(50);
+    CHECK(p3.getVictoryPoints()==3);
+    p3.setTurn(false);
 
 }
+
 TEST_CASE("can built settelment"){
     Player p1("Amit",10);
     Player p2("Yossi",20);
@@ -203,101 +207,248 @@ TEST_CASE("can built settelment"){
     //CHECK_THROWS_AS(p->buildSettlement(17), std::runtime_error);
 }
 
-// TEST_CASE("DevelopmentCardManager Singleton AND [DevelopmentCardManager]") {
-//     DevelopmentCardManager& manager1 = DevelopmentCardManager::getInstance();
-//     DevelopmentCardManager& manager2 = DevelopmentCardManager::getInstance();
+TEST_CASE("Deck") {
+    // Initialize the deck
+    Deck& deck = Deck::getInstance();
+    deck.initializeDevelopmentCards();
 
-//     REQUIRE(&manager1 == &manager2); // Check that both references are the same instance
-// }
+        // Check that the deck is not empty after initialization
+        REQUIRE(deck.getDeckSize() > 0);
 
-// TEST_CASE("Initialize and Draw Development Cards AND [DevelopmentCardManager]") {
-//     DevelopmentCardManager& manager = DevelopmentCardManager::getInstance();
-//     manager.initializeDevCards();
+        // Draw a development card
+        DevelopmentCard* card = deck.drawDevelopmentCard();
 
-//     // Ensure the deck is initialized with the correct number of cards
-//     int expectedTotalCards = 25; // Adjust based on your initialization logic
-//     REQUIRE(manager.getDeckSize() == expectedTotalCards);
+        // Check that the drawn card is not nullptr
+        REQUIRE(card != nullptr);
 
-//     // Draw a card and check the deck size
-//     DevelopmentCard& card = manager.drawDevelopmentCard();
-//     REQUIRE(manager.getDeckSize() == expectedTotalCards - 1);
-// }
+        // Check that the deck size decreases after drawing a card
+        REQUIRE(deck.getDeckSize() == 24); // Assuming 25 cards were initially in the deck
+}
 
-// TEST_CASE("Player buys and uses Development Cards") {
-//     ResourceManager resourceManager;
-//     Player player ("Player1", 1);
-//     player.setResManage( &resourceManager);
-//     DevelopmentCardManager& manager = DevelopmentCardManager::getInstance();
-//     manager.initializeDevCards();
+TEST_CASE("Deck Singleton") {
+    Deck& d1= Deck::getInstance();
+    Deck& d2=Deck::getInstance();
+    REQUIRE(&d1 == &d2); // Check that both references are the same instance
+}
 
-//     // Add resources needed for buying a development card
-//     player.addResourceCard(IRON,1);
-//     player.addResourceCard(WOOL,1);
-//     player.addResourceCard(WHEAT,1);
-//     // Player buys a development card
-//     player.buyDevelopmentCard();
-//     REQUIRE(player.getDevelopmentCardCount() == 1);
-
-//     const std::map<DevelopmentCard*, int>& devCards = player.getDevelopmentCards();
-//     REQUIRE_FALSE(devCards.empty()); // Make sure the player has at least one development card
-//     DevelopmentCard* card = devCards.begin()->first;
-//     player.useDevelopmentCard(card);
-//     REQUIRE(player.getDevelopmentCardCount() == 0);
-// }
-
-// TEST_CASE("Development Card effects", "[Player][DevelopmentCardManager]") {
-//     ResourceManager resourceManager;
-//     Player player1 = createPlayer("Player1", 1, &resourceManager);
-//     Player player2 = createPlayer("Player2", 2, &resourceManager);
-//     Player player3 = createPlayer("Player3", 3, &resourceManager);
+TEST_CASE("Player buys and uses Development Cards") {
+    Player p1("Hagit", 1);
+    Player p2("romi",2);
+    Player p3("mai",3);
+    Catan c(p1,p2,p3);
     
-//     DevelopmentCardManager& manager = DevelopmentCardManager::getInstance();
-//     manager.initializeDevCards();
+    // Add resources needed for buying a development card
+    p1.addResourceCard(IRON,1);
+    p1.addResourceCard(WOOL,1);
+    p1.addResourceCard(WHEAT,1);
+    // Player buys a development card
+    p1.buyDevelopmentCard();
+    REQUIRE(p1.getDevelopmentCardCount() == 1);
 
-//     // Add resources needed for buying a development card
-//     addResourcesForDevelopmentCard(player1);
-//     player1.buyDevelopmentCard();
+    std::vector<DevelopmentCard*> devCards = p1.getDevelopmentCards();
+    REQUIRE_FALSE(devCards.empty()); // Make sure the player has at least one development card
+}
 
-//     // Get the drawn card and simulate its use
-//     DevelopmentCard& card = player1.getDevelopmentCards().front();
-//     DevelopmentCardType cardType = card.getDevelopmentCardType();
+TEST_CASE("Development Card effects Player") {
+    Player player1 ("Player1", 1);
+    Player player2 ("Player2", 2);
+    Player player3 ("Player3", 3);
 
-//     if (cardType == MONOPOLY) {
-//         // Simulate using the Monopoly card
-//         player1.playDevelopmentCard(card);
-//         // Check the effect, e.g., player1 receives all of one resource type from other players
-//     } else if (cardType == ROAD_BUILDING) {
-//         // Simulate using the Road Building card
-//         player1.playDevelopmentCard(card);
-//         // Check the effect, e.g., player1 can build two roads for free
-//     } else if (cardType == YEAR_OF_PLENTY) {
-//         // Simulate using the Year of Plenty card
-//         player1.playDevelopmentCard(card);
-//         // Check the effect, e.g., player1 receives two resource cards of choice
-//     }
-// }
+    player1.setOtherPlayers(&player2,&player3);
+    player2.setOtherPlayers(&player1,&player3);
+    player3.setOtherPlayers(&player1,&player2);
+    //test YEAR_OF_PLENTY card
+    player1.addDevelopmentCard(new DevelopmentCard(YEAR_OF_PLENTY));
+    CHECK_EQ(player1.getDevelopmentCardCount(),1);
+    player1.useYearOfPlentyCard(IRON,WHEAT);
 
-// TEST_CASE("Knight Card and Largest Army", "[Player][DevelopmentCardManager]") {
-//     ResourceManager resourceManager;
-//     Player player1 = createPlayer("Player1", 1, &resourceManager);
-//     Player player2 = createPlayer("Player2", 2, &resourceManager);
+    //add iron to player 2 and 3 for checking
+    player2.addResourceCard(IRON,1);
+    player3.addResourceCard(IRON,1);
+    CHECK_EQ(player2.getResourceCardCount(IRON),1);
+    CHECK_EQ(player3.getResourceCardCount(IRON),1);
     
-//     DevelopmentCardManager& manager = DevelopmentCardManager::getInstance();
-//     manager.initializeDevCards();
+    //test MONOPOLY card
+    player1.addDevelopmentCard(new DevelopmentCard(MONOPOLY));
+    player1.useMonopolyCard(IRON);
 
-//     // Add resources needed for buying development cards
-//     for (int i = 0; i < 3; ++i) {
-//         addResourcesForDevelopmentCard(player1);
-//         player1.buyDevelopmentCard();
-//     }
+    CHECK_EQ(player2.getResourceCardCount(IRON),0);
+    CHECK_EQ(player3.getResourceCardCount(IRON),0);
+    
+    //test ROAD_BUILDING card
+    ResourceManager* res=new ResourceManager();
+    Board* b=new Board();
+    player1.setBoard(b);
+    player1.setResManage(res);
+    player1.addDevelopmentCard(new DevelopmentCard(ROAD_BUILDING));
+    player1.setTurn(true);
+    player1.useRoadBuildingCard(0,1,2,3);
+    
 
-//     // Check if player1 gets the Largest Army card after using 3 Knights
-//     for (int i = 0; i < 3; ++i) {
-//         DevelopmentCard& card = player1.getDevelopmentCards().front();
-//         if (card.getDevelopmentCardType() == KNIGHT) {
-//             player1.playDevelopmentCard(card);
-//         }
-//     }
-//     REQUIRE(player1.hasLargestArmy());
-//     REQUIRE(player1.getVictoryPoints() == 2); // 2 points for the Largest Army
-// }
+    //test YEAR_OF_PLENTY card
+    CHECK_EQ(player1.getVictoryPoints(),0);
+    player1.addDevelopmentCard(new DevelopmentCard(YEAR_OF_PLENTY));
+    player1.useVictoryPointCard();
+    CHECK_EQ(player1.getVictoryPoints(),1);
+
+
+    //test Knight card
+    player1.addDevelopmentCard(new DevelopmentCard(KNIGHT));
+    player1.addDevelopmentCard(new DevelopmentCard(KNIGHT));
+    player1.addDevelopmentCard(new DevelopmentCard(KNIGHT));
+    player1.useKnightCard();
+    CHECK_EQ(player1.getVictoryPoints(),3);
+}
+
+TEST_CASE("trade"){
+    Player player1("Player1", 1);
+    Player player2("Player2", 2);
+
+    player1.addResourceCard(IRON, 5);
+    player1.addResourceCard(WOOL, 3);
+
+    player2.addResourceCard(WHEAT, 4);
+    player2.addResourceCard(IRON, 2);
+
+    REQUIRE(player1.trade(player2, IRON, 2, WHEAT, 2) == true);
+    REQUIRE(player1.getResourceCardCount(IRON) == 3);
+    REQUIRE(player1.getResourceCardCount(WHEAT) == 2);
+    REQUIRE(player2.getResourceCardCount(IRON) == 4);
+    REQUIRE(player2.getResourceCardCount(WHEAT) == 2);
+
+    REQUIRE(player1.trade(player2, WOOL, 4, WHEAT, 1) == false);
+    REQUIRE(player1.getResourceCardCount(WOOL) == 3);
+
+    REQUIRE(player2.trade(player1, IRON, 5, WOOL, 1) == false);
+    REQUIRE(player2.getResourceCardCount(IRON) == 4);
+}
+
+TEST_CASE("Player wins the game") {
+    Player player1("Alice", 1);
+    Player player2("Bob", 2);
+    Player player3("Charlie", 3);
+
+    Catan game(player1, player2, player3);
+
+    // Simulate a game where player1 reaches 10 victory points
+    player1.addVictoryPointsForTest(10);
+
+    // Check if the game detects the win
+    REQUIRE(game.checkVictory(&player1) == true);
+}
+
+TEST_CASE("Simulate a game of Catan") {
+    Player player1("Alice", 1);
+    Player player2("Bob", 2);
+    Player player3("Charlie", 3);
+
+    Catan game(player1, player2, player3);
+
+    // Initialize resources for testing
+    player1.addResourceCard(WOOD, 3);
+    player1.addResourceCard(BRICK, 2);
+    player1.addResourceCard(WHEAT, 2);
+    player1.addResourceCard(WOOL, 2);
+    player1.addResourceCard(IRON, 1);
+
+    player2.addResourceCard(WOOD, 2);
+    player2.addResourceCard(BRICK, 2);
+    player2.addResourceCard(WHEAT, 2);
+    player2.addResourceCard(WOOL, 3);
+    player2.addResourceCard(IRON, 1);
+
+    player3.addResourceCard(WOOD, 2);
+    player3.addResourceCard(BRICK, 3);
+    player3.addResourceCard(WHEAT, 2);
+    player3.addResourceCard(WOOL, 2);
+    player3.addResourceCard(IRON, 2);
+
+    // Simulate player1 building a settlement and a road
+    player1.buildSettlement(1);
+    player1.buildRoad(1, 2);
+
+    // Simulate player2 building a settlement and a road
+    player2.buildSettlement(2);
+    player2.buildRoad(2, 3);
+
+    // Simulate player3 building a settlement and a road
+    player3.buildSettlement(3);
+    player3.buildRoad(3, 4);
+
+    // Simulate a trade between player1 and player2
+    player1.trade(player2, WOOD, 1,WHEAT, 1);
+    // Simulate player1 buying and using a development card
+    player1.addResourceCard(IRON, 1);
+    player1.addResourceCard(WOOL, 1);
+    player1.addResourceCard(WHEAT, 1);
+    player1.buyDevelopmentCard();
+    DevelopmentCard* card = player1.getDevelopmentCards().front();
+
+    // Simulate multiple turns and actions
+    for (int i = 0; i < 10; ++i) {
+        // Player1's turn
+        player1.rollDice();
+        player1.buildSettlement(5);
+        player1.buildRoad(5, 6);
+        player1.endTurn();
+
+        // Player2's turn
+        player2.rollDice();
+        player2.buildSettlement(6);
+        player2.buildRoad(6, 7);
+        player2.endTurn();
+
+        // Player3's turn
+        player3.rollDice();
+        player3.buildSettlement(7);
+        player3.buildRoad(7, 8);
+        player3.endTurn();
+
+        // Check victory condition
+        if (game.checkVictory(&player1)) {
+            REQUIRE(player1.getVictoryPoints() >= 10);
+            break;
+        }
+        if (game.checkVictory(&player2)) {
+            REQUIRE(player2.getVictoryPoints() >= 10);
+            break;
+        }
+        if (game.checkVictory(&player3)) {
+            REQUIRE(player3.getVictoryPoints() >= 10);
+            break;
+        }
+    }
+}
+
+TEST_CASE("Build road and settelment and city by the rulls"){
+    Player p1("Amit",10);
+    Player p2("Yossi",20);
+    Player p3("Dana",30);
+    Catan catan(p1, p2, p3);
+    Board board = catan.getBoard(); // get the board of the game.
+
+    p1.setTurn(true);
+    p1.buildSettlement(9);
+    p1.buildSettlement(8);
+    p1.buildRoad(0,1);
+    p1.buildRoad(5,6);
+    p1.setTurn(false);
+
+    // p2.setTurn(true);
+    // p2.buildSettlement(19);
+    // p2.buildSettlement(12);
+    // p2.buildRoad(2,10);
+    // p2.buildRoad(19,20);
+    // p2.setTurn(false);
+
+    // p3.setTurn(true);
+    // p3.buildSettlement(15);
+    // p3.buildSettlement(22);
+    // p3.buildRoad(22,23);
+    // p3.buildRoad(14,15);
+    // p3.printResources();
+    // p3.buildSettlement(14);
+    // p3.setTurn(false);
+
+    
+}

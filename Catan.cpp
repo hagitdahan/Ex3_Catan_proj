@@ -1,5 +1,4 @@
 #include "Catan.hpp"
-
 Catan::Catan(){}
 Catan::Catan(Player &p1, Player &p2, Player &p3){
     p1.setOtherPlayers(&p2,&p3);
@@ -26,6 +25,11 @@ Catan::Catan(Player &p1, Player &p2, Player &p3){
     p2.setResManage(resoureManage);
     p3.setResManage(resoureManage);
 
+    this->devManager = new DevCardManager(Deck::getInstance());
+    p1.setDevManager(devManager);
+    p2.setDevManager(devManager);
+    p3.setDevManager(devManager);
+
     startGame();
 }
 Catan::~Catan() {}
@@ -43,12 +47,19 @@ void Catan::ChooseStartingPlayer(){
     this->board->setTurns(3);
 }
 void Catan::nextTurn() {
+    if (checkVictory(currentPlayer)) {
+        std::cout << currentPlayer->getName() << " has won the game!" << std::endl;
+        exit(0); // End the game
+    }
     currentPlayer->setTurn(false);
     currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
     currentPlayer = players[currentPlayerIndex];
     currentPlayer->setTurn(true);
     cout<< currentPlayer->getTurn()<<endl;
     std::cout << "It is now " << currentPlayer->getName() << "'s turn." << std::endl;
+}
+bool Catan::checkVictory(Player* player) {
+    return player->getVictoryPoints() >= 10;
 }
 Player* Catan::getCurrentPlayer() const {
     return currentPlayer;

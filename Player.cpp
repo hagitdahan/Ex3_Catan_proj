@@ -19,6 +19,9 @@ void Player::setBoard(Board *board){
 void Player::setResManage(ResourceManager* res){
     this->resourceManagerInstance=res;
 }
+void Player::setDevManager(DevCardManager* dev){
+    this->devMangerInstance=dev;
+}
 std::string Player::getName(){
         return this->name;
 }
@@ -38,65 +41,55 @@ int Player::getResourceCardCount(ResourceType type){
     return resourceManagerInstance->getResourceCount(type,this);
 }
 
-// void Player::addDevelopmentCard(DevelopmentCard* card) {
-//     developmentCards[card]++;
-// }
-// void Player::addDevelopmentCard(DevelopmentCard* card) {
-//     developmentCards.insert({card, 1});
-// }
+int Player::getDevelopmentCardCount(){
+    return this->developmentCards.size();
+}
+std::vector<DevelopmentCard*> Player::getDevelopmentCards()const{
+    return developmentCards;
+}
+void Player::addDevelopmentCard(DevelopmentCard* card) {
+    devMangerInstance->addDevelopmentCard(card,this);
+}
 
-// void Player::removeDevelopmentCard(DevelopmentCard* card) {
-//     if (developmentCards[card] > 0) {
-//         developmentCards[card]--;
-//         if (developmentCards[card] == 0) {
-//             developmentCards.erase(card);
-//         }
-//     } else {
-//         throw std::runtime_error("Development card not found.");
-//     }
-// }
 void Player::setTurn(bool flagTurn){
     this->isMyTurn=flagTurn;
 }
+
 void Player::setOtherPlayers(Player* player1, Player* player2){
     this->otherPlayer1=player1;
     this->otherPlayer2=player2;
 }
-// void Player::useDevelopmentCard(DevelopmentCard* card) {
-//     removeDevelopmentCard(card);
-//     DevelopmentCardManager::getInstance().useDevelopmentCard(this, card);
-// }
+
+void Player::useDevelopmentCard(DevelopmentCard* card) {
+    devMangerInstance->removeDevelopmentCard(card,this);
+    devMangerInstance->useDevelopmentCard(card,this);
+}
+
 void Player::printResources(){
     this->resourceManagerInstance->printResources(this);
 }
+
 void Player::initializeResources(){
     this->resourceManagerInstance->initializeResources(this);
  }
-// void Player::buyDevelopmentCard() {
-//     if (resourceManagerInstance->canAfford("DEVELOPMENT_CARD", this)) {
-//         resourceManagerInstance->removeResourcesOfPiece("DEVELOPMENT_CARD", this);
-//         DevelopmentCard* newCard = DevelopmentCardManager::getInstance().drawDevelopmentCard();
-//         addDevelopmentCard(newCard);
-//     } else {
-//         std::cout << "Cannot buy development card. Not enough resources." << std::endl;
-//     }
-// }
-// int Player::getDevelopmentCardCount(){
-//    return developmentCards.size();
-// }
-// const std::map<DevelopmentCard*,int>& Player::getDevelopmentCards() const{
-//     return developmentCards;
-// }
+
+void Player::buyDevelopmentCard() {
+    this->devMangerInstance->buyDevelopmentCard(this);
+}
+
 void Player::removeHalfResources() {
     resourceManagerInstance->removeHalfResources(this);
 }
+
 int Player::getVictoryPoints() const{
     return this->victoryPoints;
 }
+
 void Player::notifyOthers(int roll){
     otherPlayer1->handleRoll(roll);
     otherPlayer2->handleRoll(roll);
 }
+
 void Player::handleRoll(int roll){
     if(roll == 7){
         this->removeHalfResources();
@@ -106,6 +99,7 @@ void Player::handleRoll(int roll){
         this->resourceManagerInstance->distributeResources(roll,this);
     }
 }
+
 void Player::rollDice() {
     int roll = (std::rand() % 6 + 1) + (std::rand() % 6 + 1);
     std::cout << "Player " << this->name << " rolled " << roll << std::endl; 
@@ -116,6 +110,7 @@ void Player::rollDice() {
     //handle the roll for me
     this->handleRoll(roll);
 }
+
 void Player::endTurn() {
     if (isMyTurn) {
         isMyTurn = false;
@@ -145,6 +140,7 @@ void Player::buildSettlement(int vertexIndex) {
         std::cout << "Cannot build settlement. Not enough resources or Not your turn." << std::endl;
     }
 }
+
 void Player::buildRoad(int startVertexIndex, int endVertexIndex) {
     if (resourceManagerInstance->canAfford("ROAD",this) && isMyTurn) {
         if(board->placeRoad(startVertexIndex, endVertexIndex,this->id)){
@@ -155,6 +151,7 @@ void Player::buildRoad(int startVertexIndex, int endVertexIndex) {
         std::cout << "Cannot build road. Not enough resources or Not your turn." << std::endl;
     }
 }
+
 void Player::buildCity(int vertexIndex) {
     if(vertexIndex < 0 || vertexIndex > 53) {
         throw std::runtime_error("Vertex not exist.");
@@ -169,41 +166,93 @@ void Player::buildCity(int vertexIndex) {
     }
 }
 
-// void Player::useMonopolyCard(ResourceType resource) {
-//     int resourceCount1 = otherPlayer1->getResourceCardCount(resource);
-//     int resourceCount2 = otherPlayer2->getResourceCardCount(resource);
-//     if (resourceCount1 > 0) {
-//         otherPlayer1->removeResourceCard(resource, resourceCount1);
-//         addResourceCard(resource, resourceCount1);
-//     }
-//     if (resourceCount2 > 0) {
-//         otherPlayer2->removeResourceCard(resource, resourceCount2);
-//         addResourceCard(resource, resourceCount2);
-//     }
-    
-// }
+void Player::useMonopolyCard(ResourceType resource) {
+    int resourceCount1 = otherPlayer1->getResourceCardCount(resource);
+    int resourceCount2 = otherPlayer2->getResourceCardCount(resource);
 
-// void Player::useRoadBuildingCard(int verindex1,int verindex2,int verindex3,int verindex4) {
-//     // Allow the player to build two roads without cost
-//     this->buildRoad(verindex1, verindex2); // Build the first road
-//     this->buildRoad(verindex3, verindex4); // Build the second road
-// }
+    if (resourceCount1 > 0) {
+        otherPlayer1->removeResourceCard(resource, resourceCount1);
+        addResourceCard(resource, resourceCount1);
+    } else {
+        std::cout << "Other Player 1 does not have any " << resource << " cards.\n";
+    }
 
-// void Player::useYearOfPlentyCard(ResourceType resource1, ResourceType resource2) {
-//     // Allow the player to take two resources of their choice from the resource bank
-//     addResourceCard(resource1, 1);
-//     addResourceCard(resource2, 1);
-// }
+    if (resourceCount2 > 0) {
+        otherPlayer2->removeResourceCard(resource, resourceCount2);
+        addResourceCard(resource, resourceCount2);
+    } else {
+        std::cout << "Other Player 2 does not have any " << resource << " cards.\n";
+    }
+}
 
-// void Player::useKnightCard() {
-//     //Add a knight to the player's knight count
-//     this->knightNumber++;
-//     if(knightNumber==3){
-//         this->victoryPoints+=2;
-//         this->knightNumber=0;
-//     }
-// }
+void Player::useRoadBuildingCard(int verindex1,int verindex2,int verindex3,int verindex4) {
+    // Allow the player to build two roads without cost
+    this->resourceManagerInstance->addResourcesOfPiece("ROAD",this);
+    this->resourceManagerInstance->addResourcesOfPiece("ROAD",this);
+    this->buildRoad(verindex1, verindex2); // Build the first road
+    this->buildRoad(verindex3, verindex4); // Build the second road
+}
 
-// void Player::useVictoryPointCard() {
-//     this->victoryPoints++;
-// }
+void Player::useYearOfPlentyCard(ResourceType resource1, ResourceType resource2) {
+    // Allow the player to take two resources of their choice from the resource bank
+    addResourceCard(resource1, 1);
+    addResourceCard(resource2, 1);
+}
+
+void Player::useKnightCard() {
+    // ספירת מספר קלפי האבירים
+    int knightCount = 0;
+    for (auto card : developmentCards) {
+        if (card->getDevelopmentCardType() == KNIGHT) {
+            knightCount++;
+        }
+    }
+
+    // בדיקת תנאי לשימוש בקלף אביר
+    if (knightCount >= 3) {
+        // הסרת שלושת קלפי האבירים מהשחקן
+        int removedKnights = 0;
+        for (auto it = developmentCards.begin(); it != developmentCards.end() && removedKnights < 3;) {
+            if ((*it)->getDevelopmentCardType() == KNIGHT) {
+                it = developmentCards.erase(it);
+                removedKnights++;
+            } else {
+                ++it;
+            }
+        }
+
+        // הוספת נקודות ניצחון לשחקן
+        this->victoryPoints += 2;
+        std::cout << "You have used 3 Knight cards and gained 2 Victory Points!" << std::endl;
+    } else {
+        std::cout << "You cannot use this card. You need 3 Knight cards." << std::endl;
+    }
+}
+
+bool Player::trade(Player& otherPlayer, ResourceType myResource, int myAmount, ResourceType theirResource, int theirAmount) {
+    if (getResourceCardCount(myResource) < myAmount) {
+        std::cerr << "Not enough resources to trade." << std::endl;
+        return false;
+    }
+    if (otherPlayer.getResourceCardCount(theirResource) < theirAmount) {
+        std::cerr << "Other player does not have enough resources to trade." << std::endl;
+        return false;
+    }
+
+    removeResourceCard(myResource, myAmount);
+    otherPlayer.addResourceCard(myResource, myAmount);
+
+    otherPlayer.removeResourceCard(theirResource, theirAmount);
+    addResourceCard(theirResource, theirAmount);
+
+    std::cout << "Trade successful!" << std::endl;
+    return true;
+}
+
+void Player::useVictoryPointCard() {
+    this->victoryPoints++;
+}
+
+void Player::addVictoryPointsForTest(int num){
+    this->victoryPoints+=num;
+}

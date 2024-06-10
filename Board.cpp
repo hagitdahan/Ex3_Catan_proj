@@ -84,25 +84,25 @@ void Board::initEdges() {
 }
 void Board::initTiles() {
     // Initialize resource tiles with numbers manually
-    lands.push_back(new Land(IRON,10)); //v - 0,1,2,3,4,5
-    lands.push_back(new Land(WOOL,2)); //v - 2,3,20,21,22,52
-    lands.push_back(new Land(WOOD,9)); //v- 22,23,24,25,26,52
-    lands.push_back(new Land(WHEAT,12)); //v- 4,5,6,7,8,51
-    lands.push_back(new Land(BRICK,6)); //v- 3,4,51,18,19,20
-    lands.push_back(new Land(WOOL,4));//v- 19,20,52,26,30,31
-    lands.push_back(new Land(BRICK,10));//v- 25,26,27,28,29,30
-    lands.push_back(new Land(WHEAT,9));//v- 7,8,9,10,11,12
-    lands.push_back(new Land(WOOD,11)); //v- 8,9,16,17,18,51
-    lands.push_back(new Land(DESERT,0)); //v- 17,18,19,31,32,48
-    lands.push_back(new Land(WOOD,3));//v- 29,30,31,3233,34
-    lands.push_back(new Land(IRON,8));//v- 28,29,34,35,36,37
-    lands.push_back(new Land(WOOD,8));//v- 9,10,13,14,15,16
-    lands.push_back(new Land(IRON,3));//v- 15,16,17,46,47,48
-    lands.push_back(new Land(WHEAT,4));//- 32,33,48,47,43,53
-    lands.push_back(new Land(WOOL,5));//v- 33,34,35,38,39,53
-    lands.push_back(new Land(BRICK,5));//v- 14,15,45,46,49,50
-    lands.push_back(new Land(WHEAT,6));//v- 42,43,44,45,46,47
-    lands.push_back(new Land(WOOL,11));//v- 39,40,41,42,43,53
+    lands.push_back(new Land(IRON,10));
+    lands.push_back(new Land(WOOL,2));
+    lands.push_back(new Land(WOOD,9)); 
+    lands.push_back(new Land(WHEAT,12)); 
+    lands.push_back(new Land(BRICK,6)); 
+    lands.push_back(new Land(WOOL,4));
+    lands.push_back(new Land(BRICK,10));
+    lands.push_back(new Land(WHEAT,9));
+    lands.push_back(new Land(WOOD,11)); 
+    lands.push_back(new Land(DESERT,0)); 
+    lands.push_back(new Land(WOOD,3));
+    lands.push_back(new Land(IRON,8));
+    lands.push_back(new Land(WOOD,8));
+    lands.push_back(new Land(IRON,3));
+    lands.push_back(new Land(WHEAT,4));
+    lands.push_back(new Land(WOOL,5));
+    lands.push_back(new Land(BRICK,5));
+    lands.push_back(new Land(WHEAT,6));
+    lands.push_back(new Land(WOOL,11));
 }
 void Board::addVertices(int startVertexIndex, int endVertexIndex, Land* land) {
     for (int i = startVertexIndex; i < 3+startVertexIndex; ++i) {
@@ -180,7 +180,6 @@ bool Board::placeSettlement(int playerId, int vertexId) {
 bool Board::placeRoad(int startVertexIndex, int endVertexIndex, int playerId) {
     std::cout << "Attempting to place road for player " << playerId << " between vertices " << startVertexIndex << " and " << endVertexIndex << std::endl;
     
-    // ודא שהמזהים של הקודקודים תקינים
     if (startVertexIndex < 0 || static_cast<std::size_t>(startVertexIndex) >= vertices.size() || endVertexIndex < 0 || static_cast<std::size_t>(endVertexIndex) >= vertices.size()) {
         std::cout << "Invalid vertex id(s)." << std::endl;
         return false;
@@ -193,8 +192,9 @@ bool Board::placeRoad(int startVertexIndex, int endVertexIndex, int playerId) {
                 std::cout << "Road already exists between the vertices." << std::endl;
                 return false;
             } else {
-                // הצב את הדרך
                 edge->setOwnerId(playerId);
+                cout<<vertices[startVertexIndex]->edges[0].getOwnerId()<<endl;
+                cout<<vertices[startVertexIndex]->edges[1].getOwnerId()<<endl;
                 Road* road = new Road(playerId);
                 // Assuming Edge has a setPiece method
                 edge->setPiece(road);
@@ -203,8 +203,6 @@ bool Board::placeRoad(int startVertexIndex, int endVertexIndex, int playerId) {
             }
         }
     }
-    
-    // אם לא נמצאה דרך קיימת, החזר שגיאה
     std::cout << "No existing edge found between the vertices." << std::endl;
     return false;
 }
@@ -230,9 +228,6 @@ bool Board::placeCity(int playerId, int vertexId) {
 }
 void Board::setTurns(int turn){
     this->turns=turn;
-}
-void Board::printCheck(){
-  std::cout<< vertices[0]->getOwner() << std::endl;
 }
 std::vector<ResourceType> Board::getVertexResources(int vertexIndex) const {
     return vertices[vertexIndex]->getConnectedResources();
