@@ -54,19 +54,19 @@ void Board::addEdge(int startIndex, int endIndex, int jump) {
                 }
             }
             if (!edgeExists) {
-                Edge* e = new Edge(*vertices[i], *vertices[i + jump]);
+                Edge* e = new Edge(vertices[i], vertices[i + jump]);
                 edges.push_back(e);
-                vertices[i]->addEdge(*e);
-                vertices[i + jump]->addEdge(*e);
+                vertices[i]->addEdge(e);
+                vertices[i + jump]->addEdge(e);
             }
             if(jump==1) i=i+1;
             else i=i+2;
         }
         if(jump!=1){
-            Edge* e = new Edge(*vertices[endIndex], *vertices[endIndex + jump]);
+            Edge* e = new Edge(vertices[endIndex], vertices[endIndex + jump]);
             edges.push_back(e);
-            vertices[endIndex]->addEdge(*e);
-            vertices[endIndex + jump]->addEdge(*e);
+            vertices[endIndex]->addEdge(e);
+            vertices[endIndex + jump]->addEdge(e);
         }
 }
 void Board::initEdges() {
@@ -157,10 +157,10 @@ bool Board::placeSettlement(int playerId, int vertexId) {
 
     // Check if there is an adjacent road owned by the player
     bool adjacentRoadOwnedByPlayer = false;
-    const std::vector<Edge>& edgesVer = vertex->getConnectedEdges();
+    const std::vector<Edge*> edgesVer = vertex->getConnectedEdges();
     for (std::size_t i = 0; i < edgesVer.size(); i++) {
-        const Edge& edge = edgesVer[i];
-        if (edge.getOwnerId() == playerId) {
+        const Edge* edge = edgesVer[i];
+        if (edge->getOwnerId() == playerId) {
             adjacentRoadOwnedByPlayer = true;
             break;
         }
@@ -193,8 +193,8 @@ bool Board::placeRoad(int startVertexIndex, int endVertexIndex, int playerId) {
                 return false;
             } else {
                 edge->setOwnerId(playerId);
-                cout<<vertices[startVertexIndex]->edges[0].getOwnerId()<<endl;
-                cout<<vertices[startVertexIndex]->edges[1].getOwnerId()<<endl;
+                cout<<vertices[startVertexIndex]->edges[0]->getOwnerId()<<endl;
+                cout<<vertices[startVertexIndex]->edges[1]->getOwnerId()<<endl;
                 Road* road = new Road(playerId);
                 // Assuming Edge has a setPiece method
                 edge->setPiece(road);

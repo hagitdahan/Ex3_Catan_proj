@@ -452,3 +452,12 @@ TEST_CASE("Build road and settelment and city by the rulls"){
 
     
 }
+
+TEST_CASE("connection between edges and vertex"){
+    Board * b=new Board();
+    vector<Edge*>edges=b->getEdges();
+    vector<Vertex*>vertices=b->getVertices();
+    edges[0]->setOwnerId(10);
+    CHECK_EQ(vertices[0]->getConnectedEdges().at(0)->getOwnerId(),10);
+
+}

@@ -14,7 +14,7 @@ public:
     int id; /**< The unique identifier of the vertex. */
     int owner; /**< The ID of the player who owns this vertex. */
     Piece *piece; /**< The piece (settlement or city) built on this vertex. */
-    std::vector<Edge> edges; /**< The edges connected to this vertex. */
+    std::vector<Edge*> edges; /**< The edges connected to this vertex. */
     std::vector<ResourceType> connectedResources; /**< The types of resources connected to this vertex. */
      /**
      * @brief Default constructor for the Vertex class.
@@ -33,14 +33,14 @@ public:
      * @brief Adds an edge to the list of connected edges.
      * @param e The edge to add.
      */
-    void addEdge(const Edge &e){
+    void addEdge(Edge *e){
         edges.push_back(e);
     }
     /**
      * @brief Returns a vector of connected edges.
      * @return A constant reference to the vector of connected edges.
      */
-    const std::vector<Edge>& getConnectedEdges() const {
+    const std::vector<Edge*>& getConnectedEdges() const {
         return edges;
     }
     /**
