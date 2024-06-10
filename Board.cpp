@@ -17,22 +17,21 @@ Board::~Board() {
     for (auto land : lands) {
         if (land != nullptr) {
             delete land;
-            land = nullptr; // Optional, to prevent accidental use after deletion
+            land = nullptr;
         }
     }
     
     for (auto edge : edges) {
         if (edge != nullptr) {
             delete edge;
-            edge = nullptr; // Optional
+            edge = nullptr; 
         }
     }
     
     for (auto vertex : vertices) {
         if (vertex != nullptr) {
-            //delete vertex->getPiece(); // If needed
             delete vertex;
-            vertex = nullptr; // Optional
+            vertex = nullptr;
         }
     }
 }
@@ -218,7 +217,6 @@ bool Board::placeCity(int playerId, int vertexId) {
         std::cout << "You can only build a city on an existing settlement." << std::endl;
         return false;
     }
-    delete currentPiece;
 
     City* city = new City(playerId);
     vertex->setPiece(city);

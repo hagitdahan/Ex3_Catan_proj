@@ -26,7 +26,7 @@ public:
      * @param name The name of the player.
      * @param id The unique identifier of the player.
      */
-    Player(const std::string name,int id);
+    Player(const std::string &playerName,int playerId);
     /**
      * @brief Sets the game board for the player.
      * 

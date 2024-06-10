@@ -11,7 +11,7 @@ class Edge;
  */
 class Vertex {
 public:
-    int id; /**< The unique identifier of the vertex. */
+    int VertexId; /**< The unique identifier of the vertex. */
     int owner; /**< The ID of the player who owns this vertex. */
     Piece *piece; /**< The piece (settlement or city) built on this vertex. */
     std::vector<Edge*> edges; /**< The edges connected to this vertex. */
@@ -19,12 +19,12 @@ public:
      /**
      * @brief Default constructor for the Vertex class.
      */
-    Vertex():id(0), owner(0), piece(nullptr) {};
+    Vertex():VertexId(0), owner(0), piece(nullptr) {};
     /**
      * @brief Parameterized constructor for the Vertex class.
-     * @param i The ID of the vertex.
+     * @param index The ID of the vertex.
      */
-    Vertex(int i) : id(i) ,owner(0),piece(nullptr){}
+    Vertex(int index) : VertexId(index) ,owner(0),piece(nullptr){}
      /**
      * @brief Destructor for the Vertex class.
      */
@@ -33,8 +33,8 @@ public:
      * @brief Adds an edge to the list of connected edges.
      * @param e The edge to add.
      */
-    void addEdge(Edge *e){
-        edges.push_back(e);
+    void addEdge(Edge *edge){
+        edges.push_back(edge);
     }
     /**
      * @brief Returns a vector of connected edges.
@@ -62,20 +62,20 @@ public:
      * @return The ID of the vertex.
      */
     int getVertexId() const {
-        return this->id;
+        return this->VertexId;
     }
     /**
      * @brief Sets the owner of the vertex.
      * @param id The ID of the player who owns the vertex.
      */
-    void setOwner(int id){
-        this->owner=id;
+    void setOwner(int ownerId){
+        this->owner=ownerId;
     }
     /**
      * @brief Gets the ID of the owner of the vertex.
      * @return The ID of the player who owns the vertex.
      */
-    int getOwner(){
+    int getOwner() const{
         return this->owner;
     }
     /**
@@ -83,14 +83,13 @@ public:
      * @param piece The piece to set on the vertex.
      */
     void setPiece(Piece *piece){
-        delete this->piece;
         this->piece = piece;
     }
     /**
      * @brief Gets the piece (settlement or city) on the vertex.
      * @return A pointer to the piece on the vertex.
      */
-    Piece * getPiece(){
+    Piece * getPiece() const{
         return this->piece;
     }
 };

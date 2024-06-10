@@ -51,7 +51,6 @@ int main()
     p3.buildSettlement(22);
     p3.buildRoad(22,23);
     p3.buildRoad(14,15);
-    p3.printResources();
     p3.setTurn(false);
     
     catan.ChooseStartingPlayer();
@@ -81,7 +80,6 @@ int main()
     catan.getCurrentPlayer()->addResourceCard(WOOD,1);
     catan.getCurrentPlayer()->addResourceCard(BRICK,1);
     catan.getCurrentPlayer()->addResourceCard(WOOL,1);
-    catan.getCurrentPlayer()->printResources();
     catan.getCurrentPlayer()->buildSettlement(14);
     catan.getCurrentPlayer()->endTurn();
     catan.nextTurn();

@@ -23,6 +23,11 @@ $(TESTTARGET): $(TESTOBJS) $(OBJS)
 %.o: %.cpp $(HDRS)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
+# tidy:
+# 	clang-tidy $(SRCS) $(HDRS) -- $(CXXFLAGS)
+tidy:
+	clang-tidy $(SRCS) $(HDRS) -checks=bugprone-*,clang-analyzer-*,cppcoreguidelines-*,performance-*,portability-*,readability-*,-cppcoreguidelines-pro-bounds-pointer-arithmetic,-cppcoreguidelines-owning-memory --warnings-as-errors=-* --
+
 # valgrind: $(TARGET) $(TESTTARGET)
 # 	valgrind --leak-check=full --track-origins=yes --log-file=valgrind-report.txt ./$(TARGET)
 # 	valgrind --leak-check=full --track-origins=yes --log-file=valgrind-test-report.txt ./$(TESTTARGET)

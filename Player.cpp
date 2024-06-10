@@ -1,7 +1,7 @@
 #include "Player.hpp"
 
 Player::Player(){};
-Player::Player(const std::string name,int id) {
+Player::Player(const std::string &name,int id) {
     std::cout << "Player constructed: " << name << std::endl;
     this->name=name;
     this->victoryPoints=0;
@@ -161,7 +161,8 @@ void Player::buildCity(int vertexIndex) {
             resourceManagerInstance->removeResourcesOfPiece("CITY",this);
             this->victoryPoints+=1;
         }
-    } else {
+    } 
+    else {
         std::cout << "Cannot build city. Not enough resources or it is not your turn." << std::endl;
     }
 }
@@ -200,17 +201,15 @@ void Player::useYearOfPlentyCard(ResourceType resource1, ResourceType resource2)
 }
 
 void Player::useKnightCard() {
-    // ספירת מספר קלפי האבירים
     int knightCount = 0;
-    for (auto card : developmentCards) {
+    for (auto *card : developmentCards) {
         if (card->getDevelopmentCardType() == KNIGHT) {
             knightCount++;
         }
     }
 
-    // בדיקת תנאי לשימוש בקלף אביר
     if (knightCount >= 3) {
-        // הסרת שלושת קלפי האבירים מהשחקן
+
         int removedKnights = 0;
         for (auto it = developmentCards.begin(); it != developmentCards.end() && removedKnights < 3;) {
             if ((*it)->getDevelopmentCardType() == KNIGHT) {
@@ -221,7 +220,6 @@ void Player::useKnightCard() {
             }
         }
 
-        // הוספת נקודות ניצחון לשחקן
         this->victoryPoints += 2;
         std::cout << "You have used 3 Knight cards and gained 2 Victory Points!" << std::endl;
     } else {
