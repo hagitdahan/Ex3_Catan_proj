@@ -382,7 +382,6 @@ TEST_CASE("Simulate a game of Catan") {
     player1.addResourceCard(WOOL, 1);
     player1.addResourceCard(WHEAT, 1);
     player1.buyDevelopmentCard();
-    DevelopmentCard* card = player1.getDevelopmentCards().front();
 
     // Simulate multiple turns and actions
     for (int i = 0; i < 10; ++i) {

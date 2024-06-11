@@ -1,49 +1,248 @@
-משחק הקאטן - README
-תיאור כללי
-המשחק "קאטן" הוא משחק לוח אסטרטגי שבו השחקנים מתחרים על פיתוח איים, בניית דרכים ויישובים ואיסוף משאבים. המטרה היא להגיע למספר הנקודות הנדרש כדי לנצח.
+##Catan Game
+# written by hagit dahan 
+# 315158568
+# Email: hagitdahan101@gmail.com
+##Overview
 
-מבנה הלוח
-הלוח מורכב מהמחלקות הבאות:
+This project is an implementation of the popular board game "Catan". The game is designed using object-oriented principles and includes various classes to manage the game board, players, resources, and game mechanics.
 
-קודקודים (Vertices):
+## Classes
 
-ממוספרים מ-0 עד 53, משמאל לימין בשורות.
-כל קודקוד מכיל את הצלעות המחוברות אליו, רשימת משאבים שהוא מחבר ביניהם, מספר ID לפי המספור ושדה שמסמן האם נבנתה עליו עיר או יישוב.
-צלעות (Edges):
+### Vertex
 
-כל צלע מכילה את שני הקודקודים המחוברים אליה, ושדה של תעודת זהות שחקן כדי לדעת האם נבנתה על הצלע דרך.
-סה"כ 72 צלעות בגרף.
-איים (Islands):
+Represents a vertex on the game board.
 
-כל אי מורכב משישה קודקודים, מספר ID בין 2 ל-12 ומשאב שאותו האי נותן.
-בניית הלוח
-בבניית הלוח מתבצע תהליך יצירה של כל האלמנטים המוזכרים לעיל.
+- **Attributes:**
+  - `int VertexId` - The unique identifier of the vertex.
+  - `int owner` - The ID of the player who owns this vertex.
+  - `Piece* piece` - The piece (settlement or city) built on this vertex.
+  - `std::vector<Edge*> edges` - The edges connected to this vertex.
+  - `std::vector<ResourceType> connectedResources` - The types of resources connected to this vertex.
 
-אתחול המשחק
-בעת אתחול המשחק, מתבצעים השלבים הבאים:
+- **Methods:**
+  - `Vertex()` - Default constructor.
+  - `Vertex(int index)` - Parameterized constructor.
+  - `~Vertex()` - Destructor.
+  - `void addEdge(Edge* edge)` - Adds an edge to the list of connected edges.
+  - `const std::vector<Edge*>& getConnectedEdges() const` - Returns a vector of connected edges.
+  - `void addResource(ResourceType resourceType)` - Adds a connected resource to the vertex.
+  - `std::vector<ResourceType> getConnectedResources() const` - Returns a vector of connected resources.
+  - `int getVertexId() const` - Gets the ID of the vertex.
+  - `void setOwner(int ownerId)` - Sets the owner of the vertex.
+  - `int getOwner() const` - Gets the ID of the owner of the vertex.
+  - `void setPiece(Piece* piece)` - Sets the piece on the vertex.
+  - `Piece* getPiece() const` - Gets the piece on the vertex.
 
-יצירת שלושה שחקנים ואתחול שלהם עם הנתונים הבאים:
-לוח המשחק (אובייקט אחיד לכולם).
-מנהל משאבים משותף.
-מנהל קלפי פיתוח (ממשק סינגלטון בין חפיסת קלפי הפיתוח לבין השחקנים).
-אתחול רשימת השחקנים האחרים עבור כל שחקן.
-אופן המשחק
-התחלה
-כל שחקן מקבל משאבים התחלתיים לבניית שני יישובים ושתי דרכים.
-בוחרים שחקן התחלתי באמצעות הגרלת מספר בין 1 ל-3 ומעדכנים את סדר השחקנים בהתאם.
-המצביע על השחקן הנוכחי מתעדכן והמשחק מתחיל.
-מהלך המשחק
-בכל פעם ששחקן זורק שתי קוביות, הוא מעדכן את שאר השחקנים (באמצעות תבנית עיצוב Observer) על הטלת הקוביות.
-לכל שחקן יש פונקציית עדכון שמתמודדת עם התוצאה (למשל, זורק מחצית מהמשאבים אם יצא 7, או מקבל משאבים בהתאם לתוצאת הקוביות והנכסים שברשותו).
-פעולות אפשריות בתור השחקן
-קניית דרך, יישוב או עיר בהתאם לכמות המשאבים וחוקיות המשחק.
-קניית קלף פיתוח.
-ביצוע מסחר על המשאבים.
-בכל פעם ששחקן מנסה לבצע בנייה או קנייה מחוץ לתורו, נזרקת שגיאה.
+### ResourceManager
 
-סיום תור
-בסיום תור השחקן, מופעלת הפונקציה ENDTURN().
-מופעלת הפונקציה NEXTTURN() בתוך מחלקת CATAN.
-הפונקציה NEXTTURN() בודקת אם יש מנצח במשחק. אם אין, המשחק ממשיך.
-תיעוד
-תיעוד נרחב קיים בכל מחלקה בקובץ ה-HPP.
+Manages the resources of players in the game.
+
+- **Methods:**
+  - `ResourceManager()` - Constructs a new ResourceManager object.
+  - `void addResource(ResourceType type, int amount, Player* p)` - Adds resources to a player's inventory.
+  - `void removeResource(ResourceType type, int amount, Player* p)` - Removes resources from a player's inventory.
+  - `int getResourceCount(ResourceType type, Player* p)` - Retrieves the count of a specific resource type.
+  - `bool canAfford(std::string pieceType, Player* player)` - Checks if a player can afford to build a certain piece.
+  - `void initializeResources(Player* p)` - Initializes resources for a player.
+  - `void distributeResources(std::vector<ResourceType> resources, Player* p)` - Distributes resources based on roll value.
+  - `void printResources(Player* p)` - Prints the resources of a player.
+  - `void removeHalfResources(Player* p)` - Removes half of a player's resources if they have more than 7.
+  - `void removeResourcesOfPiece(std::string pieceType, Player* player)` - Removes resources needed to build a piece.
+  - `void addResourcesOfPiece(std::string pieceType, Player* p)` - Adds resources needed to build a piece.
+  - `void distributeResources(int roll, Player* p)` - Distributes resources based on roll value.
+
+### Player
+
+Represents a player in the game.
+
+- **Methods:**
+  - `Player()` - Default constructor.
+  - `Player(const std::string &playerName, int playerId)` - Parameterized constructor.
+  - `void setBoard(Board* board)` - Sets the game board for the player.
+  - `void setResManage(ResourceManager* res)` - Sets the resource manager instance.
+  - `void setDevManager(DevCardManager* dev)` - Sets the development card manager instance.
+  - `std::string getName()` - Gets the player's name.
+  - `int getId()` - Gets the player's ID.
+  - `bool getTurn()` - Checks if it's the player's turn.
+  - `void addResourceCard(ResourceType resource, int amount)` - Adds a resource card.
+  - `void removeResourceCard(ResourceType resource, int amount)` - Removes a resource card.
+  - `int getResourceCardCount(ResourceType type)` - Retrieves the count of a specific resource type.
+  - `int getDevelopmentCardCount()` - Gets the count of development cards.
+  - `std::vector<DevelopmentCard*> getDevelopmentCards() const` - Gets the development cards.
+  - `void addDevelopmentCard(DevelopmentCard* card)` - Adds a development card.
+  - `void setTurn(bool flagTurn)` - Sets whether it's the player's turn.
+  - `void setOtherPlayers(Player* player1, Player* player2)` - Sets the other players.
+  - `void rollDice()` - Rolls the dice.
+  - `void handleRoll(int roll)` - Handles the consequences of a roll.
+  - `void notifyOthers(int roll)` - Notifies other players about a roll.
+  - `void endTurn()` - Ends the player's turn.
+  - `void buildSettlement(int vertexIndex)` - Builds a settlement.
+  - `void buildRoad(int startVertexIndex, int endVertexIndex)` - Builds a road.
+  - `void buildCity(int vertexIndex)` - Builds a city.
+  - `void useDevelopmentCard(DevelopmentCard* card)` - Uses a development card.
+  - `void buyDevelopmentCard()` - Buys a development card.
+  - `void initializeResources()` - Initializes the player's resources.
+  - `void printResources()` - Prints the player's resources.
+  - `void removeHalfResources()` - Removes half of the player's resources.
+  - `bool trade(Player& otherPlayer, ResourceType myResource, int myAmount, ResourceType theirResource, int theirAmount)` - Trades resources with another player.
+  - `int getVictoryPoints() const` - Gets the number of victory points.
+  - `void useMonopolyCard(ResourceType resource)` - Uses a Monopoly card.
+  - `void useRoadBuildingCard(int verindex1, int verindex2, int verindex3, int verindex4)` - Uses a Road Building card.
+  - `void useYearOfPlentyCard(ResourceType resource1, ResourceType resource2)` - Uses a Year of Plenty card.
+  - `void useKnightCard()` - Uses a Knight card.
+  - `void useVictoryPointCard()` - Uses a Victory Point card.
+  - `void addVictoryPointsForTest(int num)` - Adds victory points for testing.
+
+### Piece
+
+Base class representing a generic game piece.
+
+- **Attributes:**
+  - `int owner` - Identifier of the piece's owner.
+
+- **Methods:**
+  - `Piece()` - Default constructor.
+  - `Piece(int owner)` - Parameterized constructor.
+  - `virtual ~Piece()` - Destructor.
+  - `virtual std::string getType() const = 0` - Pure virtual function for getting the type of the piece.
+  - `int getOwner() const` - Accessor method for retrieving the owner.
+  - `void setOwner(int newOwner)` - Mutator method for setting the owner.
+  - `virtual void display() const = 0` - Pure virtual function for displaying information about the piece.
+
+### Road
+
+Represents a road piece.
+
+- **Methods:**
+  - `Road(int owner)` - Constructor.
+  - `void display() const override` - Displays information about the road piece.
+  - `std::string getType() const override` - Returns the type of the road piece.
+
+### Settlement
+
+Represents a settlement piece.
+
+- **Methods:**
+  - `Settlement(int owner)` - Constructor.
+  - `std::string getType() const override` - Returns the type of the settlement piece.
+  - `void display() const override` - Displays information about the settlement piece.
+
+### City
+
+Represents a city piece.
+
+- **Methods:**
+  - `City(int owner)` - Constructor.
+  - `std::string getType() const override` - Returns the type of the city piece.
+  - `void display() const override` - Displays information about the city piece.
+
+### Land
+
+Represents a land tile on the board.
+
+- **Attributes:**
+  - `ResourceType resource` - The type of resource produced by the land.
+  - `int number` - The number associated with the land tile.
+  - `std::vector<Vertex*> vertices` - The vertices connected to the land tile.
+
+- **Methods:**
+  - `Land(ResourceType res, int num)` - Constructor for Land class.
+  - `ResourceType getResourceType() const` - Get the resource type of the land.
+  - `int getLandNumber() const` - Get the number associated with the land tile.
+  - `void addVertex(Vertex &v)` - Add a vertex connected to the land.
+  - `const std::vector<Vertex*> getVertices()` - Get the vertices connected to the land.
+  - `void printCheckLand()` - A function to check the properties of the land (for testing purposes).
+
+### Edge
+
+Represents an edge connecting two vertices on the game board.
+
+- **Attributes:**
+  - `int ownerId` - The ID of the player who owns the edge.
+  - `Vertex *vertex1` - The first vertex connected by the edge.
+  - `Vertex *vertex2` - The second vertex connected by the edge.
+  - `Piece *piece` - The piece (road) on the edge.
+
+- **Methods:**
+  - `Edge()` - Default constructor.
+  - `Edge(Vertex *v1, Vertex *v2)` - Parameterized constructor.
+  - `int getOwner() const` - Gets the owner of the edge.
+  - `void setOwner(int newOwner)` - Sets the owner of the edge.
+  - `Vertex *getVertex1() const` - Gets the first vertex connected by the edge.
+  - `Vertex *getVertex2() const` - Gets the second vertex connected by the edge.
+  - `bool isConnectedTo(const Vertex *vertex) const` - Checks if the edge is connected to a given vertex.
+  - `bool isEqual(const Edge &edge) const` - Checks if two edges are equal.
+  - `void setPiece(Piece *p)` - Sets the piece (road) on the edge.
+  - `Piece *getPiece() const` - Gets the piece (road) on the edge.
+  - `void printEdge()` - A function to print the edge details (for testing purposes).
+
+### DevelopmentCard
+
+Represents a development card.
+
+- **Attributes:**
+  - `CardType cardType` - The type of the card (Knight, Road Building, Year of Plenty, Monopoly, Victory Point).
+  - `int ownerId` - The ID of the player who owns the card.
+  - `bool used` - Indicates if the card has been used.
+
+- **Methods:**
+  - `DevelopmentCard(CardType type, int owner)` - Constructor for DevelopmentCard.
+  - `CardType getType() const` - Gets the type of the card.
+  - `int getOwner() const` - Gets the owner of the card.
+  - `bool isUsed() const` - Checks if the card has been used.
+  - `void setUsed(bool status)` - Sets the used status of the card.
+  - `void printDevCard()` - Prints the development card details (for testing purposes).
+
+### DevelopmentCardManager
+
+Manages the development cards in the game.
+
+- **Methods:**
+  - `DevelopmentCardManager()` - Constructor.
+  - `DevelopmentCard *drawCard()` - Draws a development card from the deck.
+  - `void returnCard(DevelopmentCard *card)` - Returns a used card to the deck.
+  - `int getRemainingCards() const` - Gets the number of remaining cards in the deck.
+  - `void printDevCards()` - Prints the development cards in the deck (for testing purposes).
+
+### Board
+
+Represents the game board.
+
+- **Attributes:**
+  - `std::vector<Vertex> vertices` - The vertices on the board.
+  - `std::vector<Edge> edges` - The edges on the board.
+  - `std::vector<Land> lands` - The land tiles on the board.
+
+- **Methods:**
+  - `Board()` - Constructor for Board class.
+  - `void generateVertices()` - Generates the vertices for the board.
+  - `void generateEdges()` - Generates the edges for the board.
+  - `void generateLands()` - Generates the land tiles for the board.
+  - `Vertex *getVertex(int vertexId)` - Gets a vertex by its ID.
+  - `Edge *getEdge(int edgeId)` - Gets an edge by its ID.
+  - `Land *getLand(int landId)` - Gets a land tile by its ID.
+  - `void printBoard()` - Prints the board details (for testing purposes).
+
+## Game Initialization
+
+- **Board Setup:** Constructs the board with vertices, edges, and islands.
+- **Players Initialization:** Initializes three players and assigns resources, development cards, and pieces.
+
+## Game Play
+
+1. Each player receives initial resources to build 2 settlements and 2 roads.
+2. A starting player is chosen randomly, and the players are ordered.
+3. The game begins with each player rolling dice and taking turns.
+4. Each player can:
+   - Build a road, settlement, or city if they have enough resources.
+   - Buy a development card.
+   - Trade resources.
+5. A player's turn ends with the `endTurn()` function, and the next turn starts with the `nextTurn()` function.
+6. The game checks for a winner after each turn.
+
+## Usage
+
+make to compile the main then ./catan
+
+make test to comile tests then ./test
+
