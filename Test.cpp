@@ -31,12 +31,16 @@ TEST_CASE("Test class player"){
     player2.addResourceCard(BRICK, 1);
     player2.addResourceCard(WOOL, 1);
     player2.addResourceCard(WHEAT, 1);
+    int woodNum=player2.getResourceCardCount(WOOD);
+    int brickNum=player2.getResourceCardCount(BRICK);
+    int woolNum=player2.getResourceCardCount(WOOL);
+    int wheatNum=player2.getResourceCardCount(WHEAT);
     player2.buildSettlement(0); // Assuming vertex index 0 is available
-
-    CHECK(player2.getResourceCardCount(WOOD) == 0);
-    CHECK(player2.getResourceCardCount(BRICK) == 0);
-    CHECK(player2.getResourceCardCount(WOOL) == 0);
-    CHECK(player2.getResourceCardCount(WHEAT) == 0);
+    
+    CHECK(player2.getResourceCardCount(WOOD) == woodNum-1);
+    CHECK(player2.getResourceCardCount(BRICK) == brickNum-1);
+    CHECK(player2.getResourceCardCount(WOOL) == woolNum-1);
+    CHECK(player2.getResourceCardCount(WHEAT) == wheatNum-1);
     //Assuming building a settlement gives the player 1 victory point
     CHECK(player2.getVictoryPoints() == 1);
 }
@@ -57,10 +61,6 @@ TEST_CASE("Test class Land"){
     CHECK_EQ(b->getLands().size(),19);
 }
 
-TEST_CASE("Test class DevelopentCardManage"){
-    
-}
-
 TEST_CASE("Test Roll dice"){
     Player p1("mit",10);
     Player p2("Yoss",20);
@@ -73,18 +73,17 @@ TEST_CASE("Test Roll dice"){
     p1.buildRoad(0,1);
     p1.buildRoad(5,6);
     p1.setTurn(false);
-    p1.printResources();
 
     p2.setTurn(true);
     p2.buildSettlement(2);
     p2.buildSettlement(6);
     p2.buildRoad(2,10);
     p2.buildRoad(19,20);
-    p2.addResourceCard(IRON,4);
-    p2.printResources();
+    p2.addResourceCard(IRON,5);
+    int sumRes=p2.getResourceCardCountAll();
     //p2 need to remove 3 resorces
     p2.handleRoll(7);
-    CHECK(p2.getResourceCardCount(IRON)==4);
+    CHECK_EQ(p2.getResourceCardCountAll(),sumRes/2);
     p2.setTurn(false);
 
     p3.setTurn(true);
@@ -97,16 +96,15 @@ TEST_CASE("Test Roll dice"){
 
     p2.setTurn(true);
     p2.addResourceCard(IRON,4);
-    p1.addResourceCard(IRON,4);
+    p1.addResourceCard(IRON,6);
+    int sumResourceP2=p2.getResourceCardCountAll();
+    int sumResourceP1=p1.getResourceCardCountAll();
     //p2 and p1 neet to remove half resources
     p2.notifyOthers(7);
     p2.handleRoll(7);
-    p2.printResources();
-    p1.printResources();
     p2.setTurn(false);
-    CHECK(p2.getResourceCardCount(IRON)==4);
-    CHECK(p1.getResourceCardCount(IRON)==5);
-    CHECK(p1.getResourceCardCount(WOOL)==1);
+    CHECK_EQ(p2.getResourceCardCountAll(),sumResourceP2/2);
+    CHECK_EQ(p1.getResourceCardCountAll(),sumResourceP1/2);
 
 }
 
@@ -204,7 +202,7 @@ TEST_CASE("can built settelment"){
     catan.ChooseStartingPlayer();
     Player * p=catan.getCurrentPlayer();
     p->rollDice();
-    //CHECK_THROWS_AS(p->buildSettlement(17), std::runtime_error);
+    CHECK_THROWS_AS(p->buildSettlement(17), std::runtime_error);
 }
 
 TEST_CASE("Deck") {
@@ -419,7 +417,7 @@ TEST_CASE("Simulate a game of Catan") {
     }
 }
 
-TEST_CASE("Build road and settelment and city by the rulls"){
+TEST_CASE("Build Road,Settelment and City by the rulls"){
     Player p1("Amit",10);
     Player p2("Yossi",20);
     Player p3("Dana",30);
@@ -431,23 +429,30 @@ TEST_CASE("Build road and settelment and city by the rulls"){
     p1.buildSettlement(8);
     p1.buildRoad(0,1);
     p1.buildRoad(5,6);
+    p1.addResourceCard(BRICK,1);
+    p1.addResourceCard(WOOD,1);
     p1.setTurn(false);
 
-    // p2.setTurn(true);
-    // p2.buildSettlement(19);
-    // p2.buildSettlement(12);
-    // p2.buildRoad(2,10);
-    // p2.buildRoad(19,20);
-    // p2.setTurn(false);
+    p2.setTurn(true);
+    p2.buildSettlement(19);
+    p2.buildSettlement(12);
+    p2.buildRoad(2,10);
+    p2.buildRoad(19,20);
+    p2.addResourceCard(BRICK,1);
+    p2.addResourceCard(WOOD,1);
+    p2.setTurn(false);
 
-    // p3.setTurn(true);
-    // p3.buildSettlement(15);
-    // p3.buildSettlement(22);
-    // p3.buildRoad(22,23);
-    // p3.buildRoad(14,15);
-    // p3.printResources();
-    // p3.buildSettlement(14);
-    // p3.setTurn(false);
+    p3.setTurn(true);
+    p3.buildSettlement(15);
+    p3.buildSettlement(22);
+    p3.buildRoad(22,23);
+    p3.buildRoad(14,15);
+    p3.addResourceCard(BRICK,1);
+    p3.addResourceCard(WOOD,1);
+    p3.setTurn(false);
+    catan.startGame();
+    catan.ChooseStartingPlayer();
+    CHECK_THROWS(catan.getCurrentPlayer()->buildRoad(52,53));
 
     
 }

@@ -29,6 +29,13 @@ int ResourceManager::getResourceCount(ResourceType type, Player* p){
     }
     return 0;
 }
+int ResourceManager::getResourceCountAll(Player* p){
+    int totalCount = 0;
+    for (const auto& resource : p->resourceCards) {
+        totalCount += resource.second;
+    }
+    return totalCount;
+}
 
 bool ResourceManager::canAfford(std::string pieceType, Player *p) {
     const auto &costs = buildingCosts.at(pieceType);

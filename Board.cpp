@@ -81,27 +81,47 @@ void Board::initEdges() {
     addEdge(28,36,10);
     addEdge(39,45,8);
 }
+// void Board::initTiles() {
+//     // Initialize resource tiles with numbers manually
+//     lands.push_back(new Land(IRON,10));
+//     lands.push_back(new Land(WOOL,2));
+//     lands.push_back(new Land(WOOD,9)); 
+//     lands.push_back(new Land(WHEAT,12)); 
+//     lands.push_back(new Land(BRICK,6)); 
+//     lands.push_back(new Land(WOOL,4));
+//     lands.push_back(new Land(BRICK,10));
+//     lands.push_back(new Land(WHEAT,9));
+//     lands.push_back(new Land(WOOD,11)); 
+//     lands.push_back(new Land(DESERT,0)); 
+//     lands.push_back(new Land(WOOD,3));
+//     lands.push_back(new Land(IRON,8));
+//     lands.push_back(new Land(WOOD,8));
+//     lands.push_back(new Land(IRON,3));
+//     lands.push_back(new Land(WHEAT,4));
+//     lands.push_back(new Land(WOOL,5));
+//     lands.push_back(new Land(BRICK,5));
+//     lands.push_back(new Land(WHEAT,6));
+//     lands.push_back(new Land(WOOL,11));
+
+// }
 void Board::initTiles() {
     // Initialize resource tiles with numbers manually
-    lands.push_back(new Land(IRON,10));
-    lands.push_back(new Land(WOOL,2));
-    lands.push_back(new Land(WOOD,9)); 
-    lands.push_back(new Land(WHEAT,12)); 
-    lands.push_back(new Land(BRICK,6)); 
-    lands.push_back(new Land(WOOL,4));
-    lands.push_back(new Land(BRICK,10));
-    lands.push_back(new Land(WHEAT,9));
-    lands.push_back(new Land(WOOD,11)); 
-    lands.push_back(new Land(DESERT,0)); 
-    lands.push_back(new Land(WOOD,3));
-    lands.push_back(new Land(IRON,8));
-    lands.push_back(new Land(WOOD,8));
-    lands.push_back(new Land(IRON,3));
-    lands.push_back(new Land(WHEAT,4));
-    lands.push_back(new Land(WOOL,5));
-    lands.push_back(new Land(BRICK,5));
-    lands.push_back(new Land(WHEAT,6));
-    lands.push_back(new Land(WOOL,11));
+    std::vector<std::pair<ResourceType, int>> resourceTiles = {
+        {IRON, 10}, {WOOL, 2}, {WOOD, 9}, {WHEAT, 12}, {BRICK, 6}, {WOOL, 4},
+        {BRICK, 10}, {WHEAT, 9}, {WOOD, 11}, {DESERT, 0}, {WOOD, 3}, {IRON, 8},
+        {WOOD, 8}, {IRON, 3}, {WHEAT, 4}, {WOOL, 5}, {BRICK, 5}, {WHEAT, 6},
+        {WOOL, 11}
+    };
+
+    // Shuffle the resource tiles
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::shuffle(resourceTiles.begin(), resourceTiles.end(), g);
+
+    // Add the shuffled tiles to the lands vector
+    for (const auto& tile : resourceTiles) {
+        lands.push_back(new Land(tile.first, tile.second));
+    }
 }
 void Board::addVertices(int startVertexIndex, int endVertexIndex, Land* land) {
     for (int i = startVertexIndex; i < 3+startVertexIndex; ++i) {
@@ -176,26 +196,48 @@ bool Board::placeSettlement(int playerId, int vertexId) {
     std::cout << "Settlement placed successfully." << std::endl;
     return true;
 }
+
 bool Board::placeRoad(int startVertexIndex, int endVertexIndex, int playerId) {
     std::cout << "Attempting to place road for player " << playerId << " between vertices " << startVertexIndex << " and " << endVertexIndex << std::endl;
     
     if (startVertexIndex < 0 || static_cast<std::size_t>(startVertexIndex) >= vertices.size() || endVertexIndex < 0 || static_cast<std::size_t>(endVertexIndex) >= vertices.size()) {
-        std::cout << "Invalid vertex id(s)." << std::endl;
+        throw std::runtime_error("Invalid vertex");
         return false;
     }
     
+    // Check if the road can be placed
+    bool isConnected = false;
+    for (Edge* edge : vertices[startVertexIndex]->edges) {
+        if (edge->getOwnerId() == playerId) {
+            isConnected = true;
+            break;
+        }
+    }
+    if (!isConnected) {
+        for (Edge* edge : vertices[endVertexIndex]->edges) {
+            if (edge->getOwnerId() == playerId) {
+                isConnected = true;
+                break;
+            }
+        }
+    }
+    //the first road no need to be connected
+    if(this->turns<=2) isConnected=true;
+    if (!isConnected) {
+        throw std::runtime_error("Road must be connected to an existing road, settlement, or city owned by the player.");
+        return false;
+    }
+    
+    // Check if the edge already exists
     for (Edge* edge : edges) {
         if ((edge->getStartVertexId() == startVertexIndex && edge->getEndVertexId() == endVertexIndex) ||
             (edge->getStartVertexId() == endVertexIndex && edge->getEndVertexId() == startVertexIndex)) {
             if (edge->getOwnerId() != 0) {
-                std::cout << "Road already exists between the vertices." << std::endl;
+                throw std::runtime_error("Road already exists between the vertices.");
                 return false;
-            } else {
+            } else {           
                 edge->setOwnerId(playerId);
-                cout<<vertices[startVertexIndex]->edges[0]->getOwnerId()<<endl;
-                cout<<vertices[startVertexIndex]->edges[1]->getOwnerId()<<endl;
                 Road* road = new Road(playerId);
-                // Assuming Edge has a setPiece method
                 edge->setPiece(road);
                 std::cout << "Road placed successfully." << std::endl;
                 return true;
@@ -205,16 +247,18 @@ bool Board::placeRoad(int startVertexIndex, int endVertexIndex, int playerId) {
     std::cout << "No existing edge found between the vertices." << std::endl;
     return false;
 }
+
 bool Board::placeCity(int playerId, int vertexId) {
     Vertex *vertex = vertices[vertexId];
     if (vertex->getOwner() != playerId) {
-        std::cout << "You can't build a city here; this vertex is not yours." << std::endl;
+        throw std::runtime_error("You can't build a city here; this vertex is not yours.");
         return false;
     }
    
     Piece* currentPiece = vertex->getPiece();
     if (currentPiece == nullptr || currentPiece->getType() != "SETTLEMENT") {
-        std::cout << "You can only build a city on an existing settlement." << std::endl;
+       throw std::runtime_error("You can only build a city on an existing settlement." );
+        
         return false;
     }
 

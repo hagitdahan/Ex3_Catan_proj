@@ -13,6 +13,9 @@ Player::Player(const std::string &name,int id) {
     resourceCards[WHEAT] = 0;
     resourceCards[IRON] = 0;
 }
+int Player::getResourceCardCountAll(){
+    return resourceManagerInstance->getResourceCountAll(this);
+}
 void Player::setBoard(Board *board){
     this->board=board;
 } 

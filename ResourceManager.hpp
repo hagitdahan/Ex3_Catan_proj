@@ -41,6 +41,13 @@ public:
      * @return The count of the specified resource type.
      */
     int getResourceCount(ResourceType type, Player *p);
+    /**
+     * @brief Retrieves the count of all Resources of player's inventory.
+     * 
+     * @param p Pointer to the player.
+     * @return The count of all resources.
+     */
+    int getResourceCountAll(Player* p);
        /**
      * @brief Checks if a player can afford to build a certain type of piece.
      * 

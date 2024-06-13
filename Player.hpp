@@ -79,15 +79,19 @@ public:
      * @param amount The amount of the resource to remove.
      */
     void removeResourceCard(ResourceType resource, int amount);
-
+    /**
+     * @brief Retrieves the count of all resources of player's inventory.
+     * 
+     * @return The count of all resources.
+     */
+    int getResourceCardCount(ResourceType type);
     /**
      * @brief Retrieves the count of a specific resource type in the player's inventory.
      * 
      * @param type The type of resource.
      * @return The count of the specified resource type.
      */
-    int getResourceCardCount(ResourceType type);
-
+    int getResourceCardCountAll();
     /**
      * @brief Gets the count of development cards owned by the player.
      * 
