@@ -116,7 +116,7 @@ void Board::initTiles() {
     // Shuffle the resource tiles
     std::random_device rd;
     std::mt19937 g(rd());
-    std::shuffle(resourceTiles.begin(), resourceTiles.end(), g);
+    //std::shuffle(resourceTiles.begin(), resourceTiles.end(), g);
 
     // Add the shuffled tiles to the lands vector
     for (const auto& tile : resourceTiles) {

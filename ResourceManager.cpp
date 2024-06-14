@@ -29,6 +29,7 @@ int ResourceManager::getResourceCount(ResourceType type, Player* p){
     }
     return 0;
 }
+
 int ResourceManager::getResourceCountAll(Player* p){
     int totalCount = 0;
     for (const auto& resource : p->resourceCards) {
@@ -127,4 +128,11 @@ void ResourceManager::distributeResources(int roll, Player* p) {
             }
         }
     }
+}
+void ResourceManager::initResources(Player* p){
+    p->resourceCards[WOOD] = 0;
+    p->resourceCards[BRICK] = 0;
+    p->resourceCards[WOOL] = 0;
+    p->resourceCards[WHEAT] = 0;
+    p->resourceCards[IRON] = 0;
 }

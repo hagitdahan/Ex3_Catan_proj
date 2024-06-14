@@ -208,7 +208,15 @@ public:
      * @return true if the trade was successful, false otherwise.
      */
     bool trade(Player& otherPlayer, ResourceType myResource, int myAmount, ResourceType theirResource, int theirAmount);
-    
+    /**
+     * @brief Trades Development Card with another player.
+     * 
+     * @param otherPlayer Reference to the other player.
+     * @param myDevCard The Card that the player is giving.
+     * @param theirDevCard The Card that the player is receiving.
+     * @return true if the trade was successful, false otherwise.
+     */
+    bool tradeDev(Player& otherPlayer, DevelopmentCard* myDevCard, DevelopmentCard* theirDevCard);
     /**
      * @brief Gets the number of victory points the player has earned.
      * 

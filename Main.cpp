@@ -59,28 +59,37 @@ int main()
         catan.ChooseStartingPlayer();
     }
     //now when player1 is the first lets start the game
-    //amit built city in vertex 8
+    //amit try to built city in vertex 8
     catan.getCurrentPlayer()->rollDice();
-    catan.getCurrentPlayer()->addResourceCard(IRON,1);
-    catan.getCurrentPlayer()->buildCity(8);
+    try {
+        catan.getCurrentPlayer()->buildCity(8);
+    }
+    catch (const std::exception &e)
+    {
+        cout << e.what() << endl;
+    }
     catan.getCurrentPlayer()->endTurn();
     catan.nextTurn();
     catan.getCurrentPlayer()->rollDice();
-    //yossi build road in (12,13)
-    //if(amit will roll 7 i need to add yossi resources to build road)
-    catan.getCurrentPlayer()->addResourceCard(WOOD,1);
-    catan.getCurrentPlayer()->addResourceCard(BRICK,1);
-    catan.getCurrentPlayer()->buildRoad(12,13);
+    //yossi try to build road in (12,13)
+    try {
+       catan.getCurrentPlayer()->buildRoad(12,13);
+    }
+    catch (const std::exception &e)
+    {
+        cout << e.what() << endl;
+    }
     catan.getCurrentPlayer()->endTurn();
     catan.nextTurn();
-    //dana build settelment in vertex14 she need wheat
-    //if(yossi / amit roll 7 i need to add data resource)
+    //dana try to build settelment in vertex 14
     catan.getCurrentPlayer()->rollDice();
-    catan.getCurrentPlayer()->addResourceCard(WHEAT,1);
-    catan.getCurrentPlayer()->addResourceCard(WOOD,1);
-    catan.getCurrentPlayer()->addResourceCard(BRICK,1);
-    catan.getCurrentPlayer()->addResourceCard(WOOL,1);
-    catan.getCurrentPlayer()->buildSettlement(14);
+    try {
+       catan.getCurrentPlayer()->buildSettlement(14);
+    }
+    catch (const std::exception &e)
+    {
+        cout << e.what() << endl;
+    }
     catan.getCurrentPlayer()->endTurn();
     catan.nextTurn();
     //now simulate trade between amit and yossi amit give yossi WHEAT and yossi give amit IRON

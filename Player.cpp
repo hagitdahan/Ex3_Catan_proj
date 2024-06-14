@@ -7,11 +7,6 @@ Player::Player(const std::string &name,int id) {
     this->victoryPoints=0;
     this->isMyTurn=false;
     this->id=id;
-    resourceCards[WOOD] = 0;
-    resourceCards[BRICK] = 0;
-    resourceCards[WOOL] = 0;
-    resourceCards[WHEAT] = 0;
-    resourceCards[IRON] = 0;
 }
 int Player::getResourceCardCountAll(){
     return resourceManagerInstance->getResourceCountAll(this);
@@ -250,6 +245,33 @@ bool Player::trade(Player& otherPlayer, ResourceType myResource, int myAmount, R
     return true;
 }
 
+bool Player::tradeDev(Player& otherPlayer, DevelopmentCard* myDevCard, DevelopmentCard* theirDevCard){
+        // Check if 'this' player has 'myDevCard'
+    auto myCardIt = std::find(developmentCards.begin(), developmentCards.end(), myDevCard);
+    if (myCardIt == developmentCards.end()) {
+        std::cerr << "You do not have the specified development card to trade." << std::endl;
+        return false;
+    }
+
+    // Check if 'otherPlayer' has 'theirDevCard'
+    auto theirCardIt = std::find(otherPlayer.getDevelopmentCards().begin(), otherPlayer.getDevelopmentCards().end(), theirDevCard);
+    if (theirCardIt == otherPlayer.getDevelopmentCards().end()) {
+        std::cerr << "Other player does not have the specified development card to trade." << std::endl;
+        return false;
+    }
+
+    // Perform the trade
+    // Remove 'myDevCard' from 'this' player's collection and add to 'otherPlayer'
+    devMangerInstance->removeDevelopmentCard(myDevCard, this);
+    devMangerInstance->addDevelopmentCard(myDevCard, &otherPlayer);
+
+    // Remove 'theirDevCard' from 'otherPlayer's collection and add to 'this' player
+    devMangerInstance->removeDevelopmentCard(theirDevCard, &otherPlayer);
+    devMangerInstance->addDevelopmentCard(theirDevCard, this);
+
+    std::cout << "Trade successful!" << std::endl;
+    return true;
+}
 void Player::useVictoryPointCard() {
     this->victoryPoints++;
 }

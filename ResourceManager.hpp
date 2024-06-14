@@ -103,6 +103,12 @@ public:
      * @param p Pointer to the player.
      */
     void distributeResources(int roll, Player* p);
+       /**
+     * @brief init all the resources of the player to zero.
+     * 
+     * @param p Pointer to the player.
+     */
+    void initResources(Player* p);
 private:
     std::map<std::string, std::map<ResourceType, int>> buildingCosts;
 };

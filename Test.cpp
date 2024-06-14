@@ -465,3 +465,21 @@ TEST_CASE("connection between edges and vertex"){
     CHECK_EQ(vertices[0]->getConnectedEdges().at(0)->getOwnerId(),10);
 
 }
+
+TEST_CASE("Trade with dev cards"){
+    Player p1("Amit",10);
+    Player p2("Yossi",20);
+    Player p3("Dana",30);
+    Catan catan(p1, p2, p3);
+    Board board = catan.getBoard(); // get the board of the game.
+
+    p1.addDevelopmentCard(new DevelopmentCard(YEAR_OF_PLENTY));
+    CHECK_EQ(p1.getDevelopmentCardCount(),1);
+    p2.addDevelopmentCard(new DevelopmentCard(KNIGHT));
+    DevelopmentCard* dev1=p1.getDevelopmentCards().at(0);
+    DevelopmentCard* dev2=p2.getDevelopmentCards().at(0);
+    p1.tradeDev(p2,dev1,dev2);
+    CHECK_EQ(p1.getDevelopmentCardCount(),1);
+    CHECK_EQ(p2.getDevelopmentCardCount(),1);
+
+}
