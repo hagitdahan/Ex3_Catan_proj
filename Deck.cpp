@@ -8,7 +8,13 @@ Deck& Deck::getInstance() {
 Deck::Deck() {
     initializeDevelopmentCards();
 }
-
+Deck::~Deck() {
+    // Clean up dynamically allocated DevelopmentCard objects
+    for (auto card : developmentCards) {
+        delete card;
+    }
+    developmentCards.clear();
+}
 void Deck::initializeDevelopmentCards() {
     // Clear any existing cards
     developmentCards.clear();

@@ -28,7 +28,8 @@ public:
      /**
      * @brief Destructor for the Vertex class.
      */
-    ~Vertex() {};
+    ~Vertex() {
+    };
     /**
      * @brief Adds an edge to the list of connected edges.
      * @param e The edge to add.

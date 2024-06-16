@@ -81,29 +81,6 @@ void Board::initEdges() {
     addEdge(28,36,10);
     addEdge(39,45,8);
 }
-// void Board::initTiles() {
-//     // Initialize resource tiles with numbers manually
-//     lands.push_back(new Land(IRON,10));
-//     lands.push_back(new Land(WOOL,2));
-//     lands.push_back(new Land(WOOD,9)); 
-//     lands.push_back(new Land(WHEAT,12)); 
-//     lands.push_back(new Land(BRICK,6)); 
-//     lands.push_back(new Land(WOOL,4));
-//     lands.push_back(new Land(BRICK,10));
-//     lands.push_back(new Land(WHEAT,9));
-//     lands.push_back(new Land(WOOD,11)); 
-//     lands.push_back(new Land(DESERT,0)); 
-//     lands.push_back(new Land(WOOD,3));
-//     lands.push_back(new Land(IRON,8));
-//     lands.push_back(new Land(WOOD,8));
-//     lands.push_back(new Land(IRON,3));
-//     lands.push_back(new Land(WHEAT,4));
-//     lands.push_back(new Land(WOOL,5));
-//     lands.push_back(new Land(BRICK,5));
-//     lands.push_back(new Land(WHEAT,6));
-//     lands.push_back(new Land(WOOL,11));
-
-// }
 void Board::initTiles() {
     // Initialize resource tiles with numbers manually
     std::vector<std::pair<ResourceType, int>> resourceTiles = {

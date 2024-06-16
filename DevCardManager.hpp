@@ -9,6 +9,7 @@ class Player;
 class DevCardManager{
     public:
     DevCardManager(Deck& deck) : deck(deck) {}
+    ~DevCardManager(){};
        /**
      * @brief Adds a development card to the player's collection.
      * @param card Pointer to the development card to add.

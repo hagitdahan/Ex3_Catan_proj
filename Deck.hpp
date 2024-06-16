@@ -37,6 +37,7 @@ private:
      */
     Deck(); 
     Deck(const Deck&) = delete; 
+    ~Deck();
     void operator=(const Deck&) = delete; 
     std::vector<DevelopmentCard*> developmentCards;//< Vector containing the development cards in the deck.
     std::mt19937 rng;//< Random number generator for shuffling the deck.

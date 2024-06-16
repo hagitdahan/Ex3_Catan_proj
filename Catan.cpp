@@ -32,7 +32,11 @@ Catan::Catan(Player &p1, Player &p2, Player &p3){
 
     startGame();
 }
-Catan::~Catan() {}
+Catan::~Catan() {
+    delete board;
+    delete resoureManage;
+    delete devManager;
+}
 void Catan::reorderPlayers() {
     std::rotate(players.begin(), players.begin() + currentPlayerIndex, players.end());
     currentPlayerIndex = 0;

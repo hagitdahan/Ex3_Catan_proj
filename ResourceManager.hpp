@@ -16,6 +16,7 @@ public:
      * @brief Constructs a new ResourceManager object and initializes building costs.
      */
     ResourceManager();
+    ~ResourceManager(){};
       /**
      * @brief Adds resources of a specified type to a player's inventory.
      * 
