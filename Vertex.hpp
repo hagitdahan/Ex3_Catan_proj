@@ -29,6 +29,9 @@ public:
      * @brief Destructor for the Vertex class.
      */
     ~Vertex() {
+        if(piece!=nullptr) {
+            delete piece;
+        }
     };
     /**
      * @brief Adds an edge to the list of connected edges.

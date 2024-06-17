@@ -14,26 +14,24 @@ Board::Board() {
     this->turns=0;
 }
 Board::~Board() {
-    for (auto land : lands) {
-        if (land != nullptr) {
-            delete land;
-            land = nullptr;
-        }
-    }
-    
-    for (auto edge : edges) {
-        if (edge != nullptr) {
-            delete edge;
-            edge = nullptr; 
-        }
-    }
-    
     for (auto vertex : vertices) {
         if (vertex != nullptr) {
             delete vertex;
-            vertex = nullptr;
         }
     }
+    vertices.clear();
+    for (auto edge : edges) {
+        if (edge != nullptr) {
+            delete edge;
+        }
+    }
+    edges.clear();
+    for (auto land : lands) {
+        if (land != nullptr) {
+            delete land;
+        }
+    }
+    lands.clear();  
 }
 
 void Board::initVertices() {
@@ -234,11 +232,10 @@ bool Board::placeCity(int playerId, int vertexId) {
    
     Piece* currentPiece = vertex->getPiece();
     if (currentPiece == nullptr || currentPiece->getType() != "SETTLEMENT") {
-       throw std::runtime_error("You can only build a city on an existing settlement." );
-        
+        throw std::runtime_error("You can only build a city on an existing settlement." );
         return false;
     }
-
+    delete currentPiece;
     City* city = new City(playerId);
     vertex->setPiece(city);
     

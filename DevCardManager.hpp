@@ -1,6 +1,7 @@
 #ifndef DEVCARDMANAGER_HPP
 #define DEVCARDMANAGER_HPP
 #include "Deck.hpp"
+#include <iostream>
 class Player;
 /**
  * @class DevCardManager
@@ -8,8 +9,13 @@ class Player;
  */
 class DevCardManager{
     public:
-    DevCardManager(Deck& deck) : deck(deck) {}
-    ~DevCardManager(){};
+    DevCardManager(Deck* deck) : deck(deck) {}
+    ~DevCardManager(){
+      if(deck!=nullptr){
+        this->deck->cleanInstance();
+      }
+        
+    };
        /**
      * @brief Adds a development card to the player's collection.
      * @param card Pointer to the development card to add.
@@ -34,6 +40,6 @@ class DevCardManager{
      */
     void buyDevelopmentCard(Player* p);
     private:
-    Deck& deck;
+    Deck* deck;
 };
 #endif

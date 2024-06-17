@@ -7,6 +7,9 @@ void DevCardManager::addDevelopmentCard(DevelopmentCard* card, Player* p) {
 void DevCardManager::removeDevelopmentCard(DevelopmentCard* card,Player* p){
     auto it = std::find(p->developmentCards.begin(), p->developmentCards.end(), card);
     if (it != p->developmentCards.end()) {
+        if(card->getDevelopmentCardType()==KNIGHT){
+            p->developmentCards.erase(it);
+        }
         p->developmentCards.erase(it);
     } else {
         std::cerr << "Error: Card not found in player's development cards." << std::endl;
@@ -40,7 +43,7 @@ void DevCardManager::useDevelopmentCard(DevelopmentCard* card, Player* p) {
 
 void DevCardManager::buyDevelopmentCard(Player* p) {
     if(p->resourceManagerInstance->canAfford("DEVELOPMENT_CARD",p)){
-        DevelopmentCard* newCard = Deck::getInstance().drawDevelopmentCard();
+        DevelopmentCard* newCard = Deck::getInstance()->drawDevelopmentCard();
         if (newCard) {
             addDevelopmentCard(newCard, p);
         }

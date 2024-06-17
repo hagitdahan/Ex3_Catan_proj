@@ -17,6 +17,14 @@ public:
      */
     Edge(Vertex *v1, Vertex *v2) : ownerId(0), vertex1(v1), vertex2(v2),piece(nullptr) {}
     /**
+     * @brief Destructor for the road on the edge.
+     */
+    ~Edge(){
+        if(piece!=nullptr){
+            delete piece;
+        }
+    }
+    /**
      * @brief Gets the starting vertex of the edge.
      * @return The starting vertex of the edge.
      */

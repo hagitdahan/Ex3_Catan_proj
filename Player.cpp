@@ -8,6 +8,13 @@ Player::Player(const std::string &name,int id) {
     this->isMyTurn=false;
     this->id=id;
 }
+Player::~Player(){
+    for(auto dev:developmentCards){
+        if(dev!=nullptr){
+            delete dev;
+        }   
+    }
+}
 int Player::getResourceCardCountAll(){
     return resourceManagerInstance->getResourceCountAll(this);
 }
@@ -61,6 +68,7 @@ void Player::setOtherPlayers(Player* player1, Player* player2){
 void Player::useDevelopmentCard(DevelopmentCard* card) {
     devMangerInstance->removeDevelopmentCard(card,this);
     devMangerInstance->useDevelopmentCard(card,this);
+    delete card;
 }
 
 void Player::printResources(){
@@ -208,15 +216,15 @@ void Player::useKnightCard() {
 
     if (knightCount >= 3) {
 
-        int removedKnights = 0;
-        for (auto it = developmentCards.begin(); it != developmentCards.end() && removedKnights < 3;) {
-            if ((*it)->getDevelopmentCardType() == KNIGHT) {
-                it = developmentCards.erase(it);
-                removedKnights++;
-            } else {
-                ++it;
-            }
-        }
+        // int removedKnights = 0;
+        // for (auto it = developmentCards.begin(); it != developmentCards.end() && removedKnights < 3;) {
+        //     if ((*it)->getDevelopmentCardType() == KNIGHT) {
+        //         it = developmentCards.erase(it);
+        //         removedKnights++;
+        //     } else {
+        //         ++it;
+        //     }
+        // }
 
         this->victoryPoints += 2;
         std::cout << "You have used 3 Knight cards and gained 2 Victory Points!" << std::endl;

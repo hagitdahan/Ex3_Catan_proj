@@ -38,7 +38,7 @@ class Settlement : public Piece {
 public:
     // Constructor
     Settlement(int owner) : Piece(owner) {}
-
+    ~Settlement(){};
     // Returns the type of the settlement piece
     std::string getType() const override { return "SETTLEMENT"; }
 

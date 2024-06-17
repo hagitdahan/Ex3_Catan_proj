@@ -3,6 +3,7 @@
 #include <queue>
 #include <random>
 #include <algorithm>
+#include <iostream>
 #include "Card.hpp"
 /**
  * @class Deck
@@ -10,15 +11,15 @@
  */
 class Deck {
 public:
+    //Delete copy contructor 
+    Deck(const Deck&) = delete;
+    Deck &operator=(const Deck&) = delete; 
+    ~Deck();
     /**
      * @brief Retrieves the singleton instance of the deck.
      * @return Reference to the singleton instance of the deck.
      */
-    static Deck& getInstance();
-    /**
-     * @brief Initializes the development cards in the deck.
-     */
-    void initializeDevelopmentCards();
+    static Deck* getInstance();
      /**
      * @brief Draws a development card from the deck.
      * @return Pointer to the drawn development card.
@@ -29,17 +30,28 @@ public:
      * @return The size of the deck.
      */
     int getDeckSize();
+    /**
+     * @brief Clean the instance of Deck
+     */
+    void cleanInstance();
+    
 
 private:
     /**
-     * @brief Constructor.
+     * @brief private Constructor.
      * Initializes the deck by creating and shuffling the development cards.
      */
-    Deck(); 
-    Deck(const Deck&) = delete; 
-    ~Deck();
-    void operator=(const Deck&) = delete; 
-    std::vector<DevelopmentCard*> developmentCards;//< Vector containing the development cards in the deck.
-    std::mt19937 rng;//< Random number generator for shuffling the deck.
+    Deck();  
+    /**
+     * @brief Initializes the development cards in the deck.
+     */
+    static void initializeDevelopmentCards();
+    /**
+     * @brief cleans up the deck
+     */
+    void cleanDeck();
+    static std::vector<DevelopmentCard*> developmentCards;
+    
+    static void shuffleTheDeck();
 };
 #endif
