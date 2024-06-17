@@ -7,6 +7,8 @@ Player::Player(const std::string &name,int id) {
     this->victoryPoints=0;
     this->isMyTurn=false;
     this->id=id;
+    this->knightNumber=0;
+    this->haveBiggestArmy=false;
 }
 Player::~Player(){
     for(auto dev:developmentCards){
@@ -15,6 +17,7 @@ Player::~Player(){
         }   
     }
 }
+
 int Player::getResourceCardCountAll(){
     return resourceManagerInstance->getResourceCountAll(this);
 }
@@ -63,12 +66,6 @@ void Player::setTurn(bool flagTurn){
 void Player::setOtherPlayers(Player* player1, Player* player2){
     this->otherPlayer1=player1;
     this->otherPlayer2=player2;
-}
-
-void Player::useDevelopmentCard(DevelopmentCard* card) {
-    devMangerInstance->removeDevelopmentCard(card,this);
-    devMangerInstance->useDevelopmentCard(card,this);
-    delete card;
 }
 
 void Player::printResources(){
@@ -174,63 +171,16 @@ void Player::buildCity(int vertexIndex) {
 }
 
 void Player::useMonopolyCard(ResourceType resource) {
-    int resourceCount1 = otherPlayer1->getResourceCardCount(resource);
-    int resourceCount2 = otherPlayer2->getResourceCardCount(resource);
-
-    if (resourceCount1 > 0) {
-        otherPlayer1->removeResourceCard(resource, resourceCount1);
-        addResourceCard(resource, resourceCount1);
-    } else {
-        std::cout << "Other Player 1 does not have any " << resource << " cards.\n";
-    }
-
-    if (resourceCount2 > 0) {
-        otherPlayer2->removeResourceCard(resource, resourceCount2);
-        addResourceCard(resource, resourceCount2);
-    } else {
-        std::cout << "Other Player 2 does not have any " << resource << " cards.\n";
-    }
+    devMangerInstance->useMonopolyCard(resource,this);
 }
 
 void Player::useRoadBuildingCard(int verindex1,int verindex2,int verindex3,int verindex4) {
-    // Allow the player to build two roads without cost
-    this->resourceManagerInstance->addResourcesOfPiece("ROAD",this);
-    this->resourceManagerInstance->addResourcesOfPiece("ROAD",this);
-    this->buildRoad(verindex1, verindex2); // Build the first road
-    this->buildRoad(verindex3, verindex4); // Build the second road
+    devMangerInstance->useRoadBuildingCard(verindex1,verindex2,verindex3,verindex4,this);
 }
 
 void Player::useYearOfPlentyCard(ResourceType resource1, ResourceType resource2) {
     // Allow the player to take two resources of their choice from the resource bank
-    addResourceCard(resource1, 1);
-    addResourceCard(resource2, 1);
-}
-
-void Player::useKnightCard() {
-    int knightCount = 0;
-    for (auto *card : developmentCards) {
-        if (card->getDevelopmentCardType() == KNIGHT) {
-            knightCount++;
-        }
-    }
-
-    if (knightCount >= 3) {
-
-        // int removedKnights = 0;
-        // for (auto it = developmentCards.begin(); it != developmentCards.end() && removedKnights < 3;) {
-        //     if ((*it)->getDevelopmentCardType() == KNIGHT) {
-        //         it = developmentCards.erase(it);
-        //         removedKnights++;
-        //     } else {
-        //         ++it;
-        //     }
-        // }
-
-        this->victoryPoints += 2;
-        std::cout << "You have used 3 Knight cards and gained 2 Victory Points!" << std::endl;
-    } else {
-        std::cout << "You cannot use this card. You need 3 Knight cards." << std::endl;
-    }
+   devMangerInstance->useYearOfPlentyCard(resource1,resource2,this);
 }
 
 bool Player::trade(Player& otherPlayer, ResourceType myResource, int myAmount, ResourceType theirResource, int theirAmount) {
@@ -254,36 +204,15 @@ bool Player::trade(Player& otherPlayer, ResourceType myResource, int myAmount, R
 }
 
 bool Player::tradeDev(Player& otherPlayer, DevelopmentCard* myDevCard, DevelopmentCard* theirDevCard){
-        // Check if 'this' player has 'myDevCard'
-    auto myCardIt = std::find(developmentCards.begin(), developmentCards.end(), myDevCard);
-    if (myCardIt == developmentCards.end()) {
-        std::cerr << "You do not have the specified development card to trade." << std::endl;
-        return false;
-    }
-
-    // Check if 'otherPlayer' has 'theirDevCard'
-    auto theirCardIt = std::find(otherPlayer.getDevelopmentCards().begin(), otherPlayer.getDevelopmentCards().end(), theirDevCard);
-    if (theirCardIt == otherPlayer.getDevelopmentCards().end()) {
-        std::cerr << "Other player does not have the specified development card to trade." << std::endl;
-        return false;
-    }
-
-    // Perform the trade
-    // Remove 'myDevCard' from 'this' player's collection and add to 'otherPlayer'
-    devMangerInstance->removeDevelopmentCard(myDevCard, this);
-    devMangerInstance->addDevelopmentCard(myDevCard, &otherPlayer);
-
-    // Remove 'theirDevCard' from 'otherPlayer's collection and add to 'this' player
-    devMangerInstance->removeDevelopmentCard(theirDevCard, &otherPlayer);
-    devMangerInstance->addDevelopmentCard(theirDevCard, this);
-
-    std::cout << "Trade successful!" << std::endl;
-    return true;
-}
-void Player::useVictoryPointCard() {
-    this->victoryPoints++;
+    return devMangerInstance->tradeDev(this,&otherPlayer,myDevCard,theirDevCard);
 }
 
 void Player::addVictoryPointsForTest(int num){
     this->victoryPoints+=num;
 }
+
+bool Player::getIfhaveBiggestArmy(){
+    if(this->knightNumber>=3)return true;
+    else return false;
+}
+

@@ -171,12 +171,12 @@ public:
      * @param vertexIndex The index of the vertex on which to build the city.
      */
     void buildCity(int vertexIndex);
-    /**
-     * @brief Uses a development card.
-     * 
-     * @param card Pointer to the development card to use.
-     */
-    void useDevelopmentCard(DevelopmentCard* card);
+    // /**
+    //  * @brief Uses a development card.
+    //  * 
+    //  * @param card Pointer to the development card to use.
+    //  */
+    // void useDevelopmentCard(DevelopmentCard* card);
     
     /**
      * @brief Buys a development card.
@@ -248,28 +248,23 @@ public:
      * @param resource2 The second type of resource to receive.
      */
     void useYearOfPlentyCard(ResourceType resource1, ResourceType resource2);
-    
-    /**
-     * @brief Uses a Knight development card.
-     */
-    void useKnightCard();
-    
-    /**
-     * @brief Uses a Victory Point development card.
-     */
-    void useVictoryPointCard();
-    
     /**
      * @brief Adds victory points to the player for testing purposes.
      * 
      * @param num The number of victory points to add.
      */
     void addVictoryPointsForTest(int num);
+     /**
+     * @brief return if the player have three knight cards.
+     * 
+     */
+    bool getIfhaveBiggestArmy();
 private:
     bool isMyTurn; /**< Flag indicating whether it's the player's turn. */
     std::string name; /**< The name of the player. */
     int id;/**< The unique identifier of the player. */
-    int knightNumber;
+    int knightNumber;/*true if the palyer have three knight*/
+    bool haveBiggestArmy;
     std::map<ResourceType, int> resourceCards;/*vector of all the resources of the player*/
     std::vector<DevelopmentCard*> developmentCards;/*vector of all the development card of the player*/
     std::vector<Settlement> settlements;
