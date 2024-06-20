@@ -28,10 +28,10 @@ tidy:
 	clang-tidy $(SRCS) $(HDRS) -checks=bugprone-*,clang-analyzer-*,cppcoreguidelines-*,performance-*,portability-*,readability-*,-cppcoreguidelines-pro-bounds-pointer-arithmetic,-cppcoreguidelines-owning-memory --warnings-as-errors=-* --
 
 
-valgrind_test: $(TARGET) 
+valgrind_test: $(TESTTARGET) 
 	valgrind --tool=memcheck $(VALGRIND_FLAGS) ./$(TESTTARGET) 2>&1 | { egrep "lost| at " || true; }
 	
-valgrind_catan:
+valgrind_catan: $(TARGET)
 	valgrind --tool=memcheck $(VALGRIND_FLAGS) ./$(TARGET) 2>&1 | { egrep "lost| at " || true; }
 
 clean:

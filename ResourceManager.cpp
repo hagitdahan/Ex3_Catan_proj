@@ -129,10 +129,30 @@ void ResourceManager::distributeResources(int roll, Player* p) {
         }
     }
 }
+
 void ResourceManager::initResources(Player* p){
     p->resourceCards[WOOD] = 0;
     p->resourceCards[BRICK] = 0;
     p->resourceCards[WOOL] = 0;
     p->resourceCards[WHEAT] = 0;
     p->resourceCards[IRON] = 0;
+}
+bool ResourceManager::trade(Player* player1,Player* otherPlayer, ResourceType myResource, int myAmount, ResourceType theirResource, int theirAmount){
+    if (getResourceCount(myResource,player1) < myAmount) {
+        std::cerr << "Not enough resources to trade." << std::endl;
+        return false;
+    }
+    if (getResourceCount(theirResource,otherPlayer) < theirAmount) {
+        std::cerr << "Other player does not have enough resources to trade." << std::endl;
+        return false;
+    }
+
+    removeResource(myResource, myAmount,player1);
+    addResource(myResource, myAmount,otherPlayer);
+
+    removeResource(theirResource, theirAmount,otherPlayer);
+    addResource(theirResource, theirAmount,player1);
+
+    std::cout << "Trade successful!" << std::endl;
+    return true;
 }

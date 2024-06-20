@@ -83,16 +83,20 @@ void DevCardManager::useYearOfPlentyCard(ResourceType resource1, ResourceType re
     delete yearsOfPlenty;
 }
 void DevCardManager::buyDevelopmentCard(Player* p) {
-    if(p->resourceManagerInstance->canAfford("DEVELOPMENT_CARD",p)){
+    if(!p->resourceManagerInstance->canAfford("DEVELOPMENT_CARD",p)){
+        std::cout << "Cannot buy development card. Not enough resources." << std::endl;
+    }
+    else{
+
         DevelopmentCard* newCard = Deck::getInstance()->drawDevelopmentCard();
         if (newCard) {
             addDevelopmentCard(newCard, p);
+            // Update the player's knight count or winning points based on the card type
+            if (newCard->getDevelopmentCardType() == KNIGHT)
+                p->knightNumber++;
+            else if (newCard->getDevelopmentCardType() == VICTORY_POINT)
+                p->victoryPoints += 1;
         }
-       // Update the player's knight count or winning points based on the card type
-        if (newCard->getDevelopmentCardType() == KNIGHT)
-            p->knightNumber++;
-        else if (newCard->getDevelopmentCardType() == VICTORY_POINT)
-            p->victoryPoints += 1;
         else {
             std::cout << "Cannot buy development card. Deck is empty." << std::endl;
         }

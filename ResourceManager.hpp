@@ -16,6 +16,9 @@ public:
      * @brief Constructs a new ResourceManager object and initializes building costs.
      */
     ResourceManager();
+    /**
+     * @brief Distructor 
+     */
     ~ResourceManager(){};
       /**
      * @brief Adds resources of a specified type to a player's inventory.
@@ -110,6 +113,18 @@ public:
      * @param p Pointer to the player.
      */
     void initResources(Player* p);
+    /**
+     * @brief Trades resources with another player.
+     * 
+     * @param player1 pointer to the player that want to trade
+     * @param otherPlayer pointer to the other player.
+     * @param myResource The type of resource the player is giving.
+     * @param myAmount The amount of the resource the player is giving.
+     * @param theirResource The type of resource the player is receiving.
+     * @param theirAmount The amount of the resource the player is receiving.
+     * @return true if the trade was successful, false otherwise.
+     */
+    bool trade(Player* player1,Player* otherPlayer, ResourceType myResource, int myAmount, ResourceType theirResource, int theirAmount);
 private:
     std::map<std::string, std::map<ResourceType, int>> buildingCosts;
 };

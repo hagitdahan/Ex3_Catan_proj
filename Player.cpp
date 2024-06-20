@@ -77,7 +77,9 @@ void Player::initializeResources(){
  }
 
 void Player::buyDevelopmentCard() {
-    this->devMangerInstance->buyDevelopmentCard(this);
+    if(isMyTurn)
+        this->devMangerInstance->buyDevelopmentCard(this);
+    else throw std::runtime_error("cannot buy dev card. Not your turn.");
 }
 
 void Player::removeHalfResources() {
@@ -127,47 +129,53 @@ void Player::endTurn() {
 
 void Player::buildSettlement(int vertexIndex) {
     if(vertexIndex<0 || vertexIndex>53 ){
-         throw std::runtime_error("Vertex not exsist.");
+        throw std::runtime_error("Cannot build settlement. Vertex not exsist.");
     }
-    else if (resourceManagerInstance->canAfford("SETTLEMENT",this) && isMyTurn) {
-        if(board->placeSettlement(this->id,vertexIndex)){
-            resourceManagerInstance->removeResourcesOfPiece("SETTLEMENT",this);
-            this->victoryPoints+=1;
-            if(settlements.size()<=2){
-                std::vector<ResourceType> res=board->getVertexResources(vertexIndex);
-                this->resourceManagerInstance->distributeResources(res,this);
-            }
+    if(!isMyTurn){
+        throw std::runtime_error("Cannot build settlement. Not your turn.");
+    }
+    if(!resourceManagerInstance->canAfford("SETTLEMENT",this)){
+        throw std::runtime_error("Cannot build settlement. Not enough resources.");
+    }
+    if(board->placeSettlement(this->id,vertexIndex)){
+        resourceManagerInstance->removeResourcesOfPiece("SETTLEMENT",this);
+        this->victoryPoints+=1;
+        if(settlements.size()<=2){
+            std::vector<ResourceType> res=board->getVertexResources(vertexIndex);
+            this->resourceManagerInstance->distributeResources(res,this);
         }
-    } 
-    else {
-        std::cout << "Cannot build settlement. Not enough resources or Not your turn." << std::endl;
     }
 }
 
 void Player::buildRoad(int startVertexIndex, int endVertexIndex) {
-    if (resourceManagerInstance->canAfford("ROAD",this) && isMyTurn) {
-        if(board->placeRoad(startVertexIndex, endVertexIndex,this->id)){
-            resourceManagerInstance->removeResourcesOfPiece("ROAD",this);
-        }
-    } 
-    else {
-        std::cout << "Cannot build road. Not enough resources or Not your turn." << std::endl;
+    if(startVertexIndex<0 || startVertexIndex>53 ||endVertexIndex<0 || endVertexIndex>53){
+        throw std::runtime_error("Cannot build road. Vertices not exsist.");
     }
+    if(!isMyTurn){
+        throw std::runtime_error("Cannot build road. Not your turn.");
+    }
+    if (!resourceManagerInstance->canAfford("ROAD",this)){
+        throw std::runtime_error("Cannot build road. Not enough resources.");
+    }
+    if(board->placeRoad(startVertexIndex, endVertexIndex,this->id)){
+            resourceManagerInstance->removeResourcesOfPiece("ROAD",this);
+    } 
 }
 
 void Player::buildCity(int vertexIndex) {
     if(vertexIndex < 0 || vertexIndex > 53) {
         throw std::runtime_error("Vertex not exist.");
     }
-    else if ((resourceManagerInstance->canAfford("CITY",this)) && isMyTurn) {
-        if(board->placeCity(this->id, vertexIndex)){
-            resourceManagerInstance->removeResourcesOfPiece("CITY",this);
-            this->victoryPoints+=1;
-        }
-    } 
-    else {
-        std::cout << "Cannot build city. Not enough resources or it is not your turn." << std::endl;
+    if(!isMyTurn){
+        throw std::runtime_error("Cannot upgrade to city. Not your turn.");
     }
+    if (!resourceManagerInstance->canAfford("CITY",this)){
+        throw std::runtime_error("Cannot build city. Not enough resources.");
+    }
+    if(board->placeCity(this->id, vertexIndex)){
+        resourceManagerInstance->removeResourcesOfPiece("CITY",this);
+        this->victoryPoints+=1;
+    } 
 }
 
 void Player::useMonopolyCard(ResourceType resource) {
@@ -175,6 +183,9 @@ void Player::useMonopolyCard(ResourceType resource) {
 }
 
 void Player::useRoadBuildingCard(int verindex1,int verindex2,int verindex3,int verindex4) {
+    if(!isMyTurn){
+        throw std::runtime_error("Cannot use card Not ypur Turn.");
+    }
     devMangerInstance->useRoadBuildingCard(verindex1,verindex2,verindex3,verindex4,this);
 }
 
@@ -184,23 +195,10 @@ void Player::useYearOfPlentyCard(ResourceType resource1, ResourceType resource2)
 }
 
 bool Player::trade(Player& otherPlayer, ResourceType myResource, int myAmount, ResourceType theirResource, int theirAmount) {
-    if (getResourceCardCount(myResource) < myAmount) {
-        std::cerr << "Not enough resources to trade." << std::endl;
-        return false;
+    if(!isMyTurn){
+        throw std::runtime_error("Cannot trade Not ypur Turn.");
     }
-    if (otherPlayer.getResourceCardCount(theirResource) < theirAmount) {
-        std::cerr << "Other player does not have enough resources to trade." << std::endl;
-        return false;
-    }
-
-    removeResourceCard(myResource, myAmount);
-    otherPlayer.addResourceCard(myResource, myAmount);
-
-    otherPlayer.removeResourceCard(theirResource, theirAmount);
-    addResourceCard(theirResource, theirAmount);
-
-    std::cout << "Trade successful!" << std::endl;
-    return true;
+    return this->resourceManagerInstance->trade(this,&otherPlayer,myResource,myAmount,theirResource,theirAmount);
 }
 
 bool Player::tradeDev(Player& otherPlayer, DevelopmentCard* myDevCard, DevelopmentCard* theirDevCard){

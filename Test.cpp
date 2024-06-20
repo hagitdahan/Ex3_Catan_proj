@@ -224,6 +224,7 @@ TEST_CASE("Deck") {
     p.addResourceCard(WOOL,1);
     p.addResourceCard(WHEAT,1);
     //Player buys a development card
+    p.setTurn(true);
     p.buyDevelopmentCard();
     // //Check that the deck size decreases after drawing a card
     REQUIRE(deck->getDeckSize() == 24); // Assuming 25 cards were initially in the deck
@@ -251,6 +252,7 @@ TEST_CASE("Player buys and uses Development Cards") {
     p1.addResourceCard(WOOL,1);
     p1.addResourceCard(WHEAT,1);
     //Player buys a development card
+    p1.setTurn(true);
     p1.buyDevelopmentCard();
     REQUIRE(p1.getDevelopmentCardCount() == 1);
 
@@ -307,7 +309,7 @@ TEST_CASE("trade"){
 
     player2.addResourceCard(WHEAT, 4);
     player2.addResourceCard(IRON, 2);
-
+    player1.setTurn(true);
     REQUIRE(player1.trade(player2, IRON, 2, WHEAT, 2) == true);
     REQUIRE(player1.getResourceCardCount(IRON) == 3);
     REQUIRE(player1.getResourceCardCount(WHEAT) == 2);
@@ -316,9 +318,11 @@ TEST_CASE("trade"){
 
     REQUIRE(player1.trade(player2, WOOL, 4, WHEAT, 1) == false);
     REQUIRE(player1.getResourceCardCount(WOOL) == 3);
-
+    player1.setTurn(false);
+    player2.setTurn(true);
     REQUIRE(player2.trade(player1, IRON, 5, WOOL, 1) == false);
     REQUIRE(player2.getResourceCardCount(IRON) == 4);
+    player2.setTurn(false);
 }
 
 TEST_CASE("Player wins the game") {
@@ -362,17 +366,23 @@ TEST_CASE("Simulate a game of Catan") {
     player3.addResourceCard(IRON, 2);
 
     // Simulate player1 building a settlement and a road
+    player1.setTurn(true);
     player1.buildSettlement(1);
     player1.buildRoad(1, 2);
+    player1.setTurn(false);
 
     // Simulate player2 building a settlement and a road
+    player2.setTurn(true);
     player2.buildSettlement(2);
     player2.buildRoad(2, 3);
+    player2.setTurn(false);
 
     // Simulate player3 building a settlement and a road
+    player3.setTurn(true);
     player3.buildSettlement(3);
     player3.buildRoad(3, 4);
-
+    player3.setTurn(false);
+    player1.setTurn(true);
     // Simulate a trade between player1 and player2
     player1.trade(player2, WOOD, 1,WHEAT, 1);
     // Simulate player1 buying and using a development card
@@ -380,26 +390,48 @@ TEST_CASE("Simulate a game of Catan") {
     player1.addResourceCard(WOOL, 1);
     player1.addResourceCard(WHEAT, 1);
     player1.buyDevelopmentCard();
+    player1.setTurn(false);
 
     // Simulate multiple turns and actions
     for (int i = 0; i < 10; ++i) {
         // Player1's turn
+        player1.setTurn(true);
         player1.rollDice();
-        player1.buildSettlement(5);
-        player1.buildRoad(5, 6);
+        try{
+            player1.buildSettlement(5);
+            player1.buildRoad(5, 6);
+        }
+        catch (const std::exception &e){
+            cout << e.what() << endl;
+        }
         player1.endTurn();
+        player1.setTurn(false);
 
         // Player2's turn
+        player2.setTurn(true);
         player2.rollDice();
-        player2.buildSettlement(6);
-        player2.buildRoad(6, 7);
+        try{
+            player2.buildSettlement(6);
+            player2.buildRoad(6, 7);
+        }
+        catch (const std::exception &e){
+            cout << e.what() << endl;
+        }
         player2.endTurn();
+        player2.setTurn(false);
 
         // Player3's turn
+        player3.setTurn(true);
         player3.rollDice();
-        player3.buildSettlement(7);
-        player3.buildRoad(7, 8);
+        try{
+            player3.buildSettlement(7);
+            player3.buildRoad(7, 8);
+        }
+        catch (const std::exception &e){
+            cout << e.what() << endl;
+        }
         player3.endTurn();
+        player3.setTurn(false);
 
         // Check victory condition
         if (game.checkVictory(&player1)) {
@@ -483,4 +515,32 @@ TEST_CASE("Trade with dev cards"){
     p1.useMonopolyCard(IRON);
     p2.useYearOfPlentyCard(IRON,WHEAT);
 
+}
+
+TEST_CASE("Test multiple trades and invalid trades") {
+    Player player1("Player1", 1);
+    Player player2("Player2", 2);
+
+    player1.addResourceCard(IRON, 5);
+    player1.addResourceCard(WOOL, 3);
+
+    player2.addResourceCard(WHEAT, 4);
+    player2.addResourceCard(IRON, 2);
+
+    player1.setTurn(true);
+
+    // Valid trade
+    REQUIRE(player1.trade(player2, IRON, 2, WHEAT, 2) == true);
+
+    // Another valid trade
+    REQUIRE(player1.trade(player2, WOOL, 1, WHEAT, 1) == true);
+
+    player1.setTurn(false);
+    // Invalid trade - insufficient resources
+    CHECK_THROWS(player1.trade(player2, WOOL, 4, WHEAT, 1) == false);
+
+    // Invalid trade - trading with oneself
+    CHECK_THROWS(player1.trade(player1, WOOL, 1, IRON, 1) == false);
+
+    player1.setTurn(false);
 }

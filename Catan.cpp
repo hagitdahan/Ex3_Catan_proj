@@ -59,7 +59,6 @@ void Catan::nextTurn() {
     currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
     currentPlayer = players[currentPlayerIndex];
     currentPlayer->setTurn(true);
-    cout<< currentPlayer->getTurn()<<endl;
     std::cout << "It is now " << currentPlayer->getName() << "'s turn." << std::endl;
 }
 bool Catan::checkVictory(Player* player) {

@@ -7,9 +7,7 @@
 #include <vector>
 #include "Catan.hpp"
 using namespace std;
-
-int main()
-{
+int main() {
     Player p1("Amit",10);
     Player p2("Yossi",20);
     Player p3("Dana",30);
@@ -32,13 +30,13 @@ int main()
     p3.setTurn(true);
     try
     {
-        p3.buildSettlement(0); // p3 tries to place a settlement in the same location as p2.
+        p3.buildSettlement(19); // p3 tries to place a settlement in the same location as p2.
     }
     catch (const std::exception &e)
     {
         cout << e.what() << endl;
     }
-     try
+    try
     {
         p3.buildRoad(19,20); // p3 tries to place a settlement in the same location as p2.
     }
