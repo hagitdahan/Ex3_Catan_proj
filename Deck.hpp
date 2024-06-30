@@ -13,6 +13,7 @@ class Deck {
 public:
     //Delete copy contructor 
     Deck(const Deck&) = delete;
+    //because its singletone
     Deck &operator=(const Deck&) = delete; 
     ~Deck();
     /**

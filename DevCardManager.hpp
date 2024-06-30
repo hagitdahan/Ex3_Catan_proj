@@ -9,7 +9,13 @@ class Player;
  */
 class DevCardManager{
     public:
+      /**
+     * @brief Constructs a new Development card Manager object and initializes Deck.
+     */
     DevCardManager(Deck* deck) : deck(deck) {}
+     /**
+     * @brief Distructor clean the deck
+     */
     ~DevCardManager(){
       if(deck!=nullptr){
         this->deck->cleanInstance();
